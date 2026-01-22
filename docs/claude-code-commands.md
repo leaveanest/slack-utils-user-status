@@ -135,7 +135,7 @@ feat: user-status Phase 2 - set_status, clear_status, get_status 実装
 
 ### 命令文
 
-```
+````
 ## タスク: user-status Phase 3 - プリセット機能
 
 ### 事前準備
@@ -194,38 +194,44 @@ await client.apps.datastore.delete({
   datastore: "status_presets",
   id: presetId,
 });
-```
+````
 
 ### 完了条件
+
 - [ ] 全Functionにテストがある
 - [ ] `deno task cursor-ci` が成功
 
 ### コミットメッセージ
-feat: user-status Phase 3 - プリセットCRUD実装
-```
 
+feat: user-status Phase 3 - プリセットCRUD実装
+
+```
 ---
 
 ## Phase 4: ワークフロー
 
 ### 命令文
-
 ```
+
 ## タスク: user-status Phase 4 - ワークフロー
 
 ### 事前準備
+
 - `docs/user-status-spec.md` - 「6. Workflows設計」「7. UI/UX設計」を確認
 - `docs/modal-patterns.md` を確認
 
 ### ブランチ
+
 `feature/user-status-phase4-workflows`
 
 ### 実装内容
 
 #### 1. show_status_form Function
+
 `functions/show_status_form/mod.ts` を作成。
 
 モーダルでステータス設定フォームを表示：
+
 - Status Text入力
 - Status Emoji入力
 - 有効期限選択（static_select）
@@ -235,9 +241,11 @@ feat: user-status Phase 3 - プリセットCRUD実装
 ViewSubmissionHandlerでフォーム送信を処理。
 
 #### 2. show_preset_selector Function
+
 `functions/show_preset_selector/mod.ts` を作成。
 
 プリセット選択モーダルを表示：
+
 - ユーザーのプリセット一覧
 - 共有プリセット一覧
 - 各プリセットにApplyボタン
@@ -245,45 +253,53 @@ ViewSubmissionHandlerでフォーム送信を処理。
 BlockActionsHandlerでボタンクリックを処理。
 
 #### 3. Workflows
+
 - `workflows/set_status_workflow.ts`
 - `workflows/quick_status_workflow.ts`
 - `workflows/manage_presets_workflow.ts`
 
 #### 4. Triggers
+
 - `triggers/set_status_trigger.ts` - Link trigger
 - `triggers/quick_status_trigger.ts` - Shortcut trigger
 
 ### モーダル実装の注意点
+
 - trigger_id は3秒以内に使用
 - まずローディングモーダルを表示してからデータ取得
 - private_metadata でコンテキストを保持
 
 ### 完了条件
+
 - [ ] モーダルが正しく表示される
 - [ ] `deno task cursor-ci` が成功
 
 ### コミットメッセージ
-feat: user-status Phase 4 - ワークフローとモーダルUI実装
-```
 
+feat: user-status Phase 4 - ワークフローとモーダルUI実装
+
+```
 ---
 
 ## Phase 5: 追加機能
 
 ### 命令文
-
 ```
+
 ## タスク: user-status Phase 5 - 追加機能
 
 ### ブランチ
+
 `feature/user-status-phase5-advanced`
 
 ### 実装内容
 
 #### 1. get_team_status Function
+
 `functions/get_team_status/mod.ts` を作成。
 
 チームメンバーのステータス一覧を取得：
+
 1. users.list でユーザー一覧取得
 2. 各ユーザーの users.profile.get でステータス取得
 3. 結果をフォーマットして返す
@@ -291,29 +307,34 @@ feat: user-status Phase 4 - ワークフローとモーダルUI実装
 ページネーション対応。
 
 #### 2. TeamStatusWorkflow
+
 `workflows/team_status_workflow.ts` を作成。
 
 チームステータス一覧を表示するワークフロー。
 
 #### 3. 履歴記録（オプション）
+
 set_status, apply_preset 実行時に status_history Datastoreに記録。
 
 ### 完了条件
+
 - [ ] チームステータスが正しく表示される
 - [ ] `deno task cursor-ci` が成功
 
 ### コミットメッセージ
-feat: user-status Phase 5 - チームステータス機能実装
-```
 
+feat: user-status Phase 5 - チームステータス機能実装
+
+```
 ---
 
 ## 全体完了後
-
 ```
+
 ## タスク: user-status 最終確認
 
 ### 確認事項
+
 1. 全てのFunctionが manifest.ts に登録されている
 2. 全てのWorkflowが manifest.ts に登録されている
 3. botScopes と userScopes が正しく設定されている
@@ -321,16 +342,18 @@ feat: user-status Phase 5 - チームステータス機能実装
 5. 全テストがパス
 
 ### コマンド
-deno task cursor-ci
-slack manifest validate
+
+deno task cursor-ci slack manifest validate
 
 ### 動作確認
+
 slack run でローカル実行し、以下を確認：
+
 - ステータス設定が動作する
 - プリセット保存/適用が動作する
 - モーダルが正しく表示される
-```
 
+```
 ---
 
 ## トラブルシューティング
@@ -352,3 +375,4 @@ slack run でローカル実行し、以下を確認：
 #### 4. i18n キーが見つからない
 - locales/en.json にキーが存在するか確認
 - ドット区切りのパスが正しいか確認
+```

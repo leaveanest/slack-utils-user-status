@@ -2,7 +2,8 @@
 
 ## 1. 概要
 
-**slack-utils-user-status** は Slack ユーザーステータス管理のためのワークフローアプリケーションです。
+**slack-utils-user-status** は Slack
+ユーザーステータス管理のためのワークフローアプリケーションです。
 
 ### 1.1 プロジェクト目的
 
@@ -13,14 +14,14 @@
 
 ### 1.2 技術スタック
 
-| カテゴリ | 技術 |
-|---------|------|
-| 言語 | TypeScript (Deno v2互換) |
-| SDK | Slack Deno SDK v2.15.1+ |
-| デプロイ | Slack CLI |
-| バリデーション | Zod |
-| 多言語対応 | カスタムi18nライブラリ |
-| テスト | Deno標準テストランナー |
+| カテゴリ       | 技術                     |
+| -------------- | ------------------------ |
+| 言語           | TypeScript (Deno v2互換) |
+| SDK            | Slack Deno SDK v2.15.1+  |
+| デプロイ       | Slack CLI                |
+| バリデーション | Zod                      |
+| 多言語対応     | カスタムi18nライブラリ   |
+| テスト         | Deno標準テストランナー   |
 
 ---
 
@@ -28,23 +29,23 @@
 
 ### 2.1 コア機能
 
-| 機能ID | 機能名 | 説明 | 優先度 |
-|--------|--------|------|--------|
-| F-001 | ステータス設定 | カスタム絵文字とテキストでステータスを設定 | 高 |
-| F-002 | ステータスクリア | 現在のステータスをクリア | 高 |
-| F-003 | プリセット管理 | よく使うステータスをプリセットとして保存・利用 | 高 |
-| F-004 | クイック切替 | プリセットからワンクリックでステータス変更 | 高 |
-| F-005 | 有効期限設定 | ステータスの自動クリア時刻を設定 | 中 |
-| F-006 | チームステータス | チームメンバーのステータス一覧表示 | 中 |
-| F-007 | スケジュール設定 | 定期的なステータス変更をスケジュール | 低 |
-| F-008 | ステータス履歴 | 過去のステータス変更履歴を表示 | 低 |
+| 機能ID | 機能名           | 説明                                           | 優先度 |
+| ------ | ---------------- | ---------------------------------------------- | ------ |
+| F-001  | ステータス設定   | カスタム絵文字とテキストでステータスを設定     | 高     |
+| F-002  | ステータスクリア | 現在のステータスをクリア                       | 高     |
+| F-003  | プリセット管理   | よく使うステータスをプリセットとして保存・利用 | 高     |
+| F-004  | クイック切替     | プリセットからワンクリックでステータス変更     | 高     |
+| F-005  | 有効期限設定     | ステータスの自動クリア時刻を設定               | 中     |
+| F-006  | チームステータス | チームメンバーのステータス一覧表示             | 中     |
+| F-007  | スケジュール設定 | 定期的なステータス変更をスケジュール           | 低     |
+| F-008  | ステータス履歴   | 過去のステータス変更履歴を表示                 | 低     |
 
 ### 2.2 管理機能
 
-| 機能ID | 機能名 | 説明 | 優先度 |
-|--------|--------|------|--------|
-| A-001 | 組織プリセット | 組織全体で共有するプリセットの管理 | 中 |
-| A-002 | 一括変更 | 複数ユーザーのステータスを一括変更（管理者向け） | 低 |
+| 機能ID | 機能名         | 説明                                             | 優先度 |
+| ------ | -------------- | ------------------------------------------------ | ------ |
+| A-001  | 組織プリセット | 組織全体で共有するプリセットの管理               | 中     |
+| A-002  | 一括変更       | 複数ユーザーのステータスを一括変更（管理者向け） | 低     |
 
 ---
 
@@ -59,16 +60,16 @@ const StatusPresetDatastore = DefineDatastore({
   name: "status_presets",
   primary_key: "id",
   attributes: {
-    id: { type: Schema.types.string },           // UUID
-    user_id: { type: Schema.types.string },      // Slack User ID
-    name: { type: Schema.types.string },         // プリセット名
-    status_text: { type: Schema.types.string },  // ステータステキスト
+    id: { type: Schema.types.string }, // UUID
+    user_id: { type: Schema.types.string }, // Slack User ID
+    name: { type: Schema.types.string }, // プリセット名
+    status_text: { type: Schema.types.string }, // ステータステキスト
     status_emoji: { type: Schema.types.string }, // ステータス絵文字
     duration_minutes: { type: Schema.types.integer }, // デフォルト有効期限（分）
-    is_shared: { type: Schema.types.boolean },   // 組織共有フラグ
-    sort_order: { type: Schema.types.integer },  // 表示順
-    created_at: { type: Schema.types.string },   // ISO 8601
-    updated_at: { type: Schema.types.string },   // ISO 8601
+    is_shared: { type: Schema.types.boolean }, // 組織共有フラグ
+    sort_order: { type: Schema.types.integer }, // 表示順
+    created_at: { type: Schema.types.string }, // ISO 8601
+    updated_at: { type: Schema.types.string }, // ISO 8601
   },
 });
 ```
@@ -80,13 +81,13 @@ const StatusScheduleDatastore = DefineDatastore({
   name: "status_schedules",
   primary_key: "id",
   attributes: {
-    id: { type: Schema.types.string },           // UUID
-    user_id: { type: Schema.types.string },      // Slack User ID
-    preset_id: { type: Schema.types.string },    // 適用するプリセットID
+    id: { type: Schema.types.string }, // UUID
+    user_id: { type: Schema.types.string }, // Slack User ID
+    preset_id: { type: Schema.types.string }, // 適用するプリセットID
     cron_expression: { type: Schema.types.string }, // Cron式
-    timezone: { type: Schema.types.string },     // タイムゾーン
-    is_active: { type: Schema.types.boolean },   // 有効フラグ
-    next_run_at: { type: Schema.types.string },  // 次回実行時刻
+    timezone: { type: Schema.types.string }, // タイムゾーン
+    is_active: { type: Schema.types.boolean }, // 有効フラグ
+    next_run_at: { type: Schema.types.string }, // 次回実行時刻
     created_at: { type: Schema.types.string },
     updated_at: { type: Schema.types.string },
   },
@@ -104,9 +105,9 @@ const StatusHistoryDatastore = DefineDatastore({
     user_id: { type: Schema.types.string },
     status_text: { type: Schema.types.string },
     status_emoji: { type: Schema.types.string },
-    expiration: { type: Schema.types.integer },  // Unix timestamp
-    changed_at: { type: Schema.types.string },   // ISO 8601
-    source: { type: Schema.types.string },       // 変更元: "manual", "preset", "schedule"
+    expiration: { type: Schema.types.integer }, // Unix timestamp
+    changed_at: { type: Schema.types.string }, // ISO 8601
+    source: { type: Schema.types.string }, // 変更元: "manual", "preset", "schedule"
   },
 });
 ```
@@ -132,7 +133,7 @@ export interface StatusPreset {
 export interface UserStatus {
   status_text: string;
   status_emoji: string;
-  status_expiration: number;  // Unix timestamp, 0 = no expiration
+  status_expiration: number; // Unix timestamp, 0 = no expiration
 }
 
 export interface StatusUpdateResult {
@@ -149,12 +150,12 @@ export interface StatusUpdateResult {
 
 ### 4.1 使用するSlack API
 
-| API | 用途 | スコープ |
-|-----|------|----------|
-| `users.profile.get` | ステータス取得 | `users.profile:read` |
-| `users.profile.set` | ステータス設定 | `users.profile:write` |
-| `users.list` | ユーザー一覧取得 | `users:read` |
-| `emoji.list` | カスタム絵文字一覧 | `emoji:read` |
+| API                 | 用途               | スコープ              |
+| ------------------- | ------------------ | --------------------- |
+| `users.profile.get` | ステータス取得     | `users.profile:read`  |
+| `users.profile.set` | ステータス設定     | `users.profile:write` |
+| `users.list`        | ユーザー一覧取得   | `users:read`          |
+| `emoji.list`        | カスタム絵文字一覧 | `emoji:read`          |
 
 ### 4.2 ステータス設定API詳細
 
@@ -162,11 +163,11 @@ export interface StatusUpdateResult {
 // users.profile.set のペイロード
 interface ProfileSetPayload {
   profile: {
-    status_text: string;      // 最大100文字
-    status_emoji: string;     // :emoji: 形式
+    status_text: string; // 最大100文字
+    status_emoji: string; // :emoji: 形式
     status_expiration: number; // Unix timestamp, 0 で無期限
   };
-  user?: string;  // 管理者が他ユーザーを変更する場合
+  user?: string; // 管理者が他ユーザーを変更する場合
 }
 
 // レスポンス
@@ -187,18 +188,18 @@ interface ProfileSetResponse {
 
 ### 5.1 Function一覧
 
-| Function ID | 名前 | 説明 |
-|-------------|------|------|
-| `set_status` | ステータス設定 | ステータスを設定（絵文字、テキスト、有効期限） |
-| `clear_status` | ステータスクリア | 現在のステータスをクリア |
-| `get_status` | ステータス取得 | ユーザーの現在のステータスを取得 |
-| `list_presets` | プリセット一覧 | ユーザーのプリセット一覧を取得 |
-| `create_preset` | プリセット作成 | 新しいプリセットを作成 |
-| `delete_preset` | プリセット削除 | プリセットを削除 |
-| `apply_preset` | プリセット適用 | プリセットをステータスとして適用 |
-| `show_status_form` | フォーム表示 | ステータス設定モーダルを表示 |
-| `show_preset_selector` | プリセット選択 | プリセット選択モーダルを表示 |
-| `get_team_status` | チームステータス | チームメンバーのステータス一覧を取得 |
+| Function ID            | 名前             | 説明                                           |
+| ---------------------- | ---------------- | ---------------------------------------------- |
+| `set_status`           | ステータス設定   | ステータスを設定（絵文字、テキスト、有効期限） |
+| `clear_status`         | ステータスクリア | 現在のステータスをクリア                       |
+| `get_status`           | ステータス取得   | ユーザーの現在のステータスを取得               |
+| `list_presets`         | プリセット一覧   | ユーザーのプリセット一覧を取得                 |
+| `create_preset`        | プリセット作成   | 新しいプリセットを作成                         |
+| `delete_preset`        | プリセット削除   | プリセットを削除                               |
+| `apply_preset`         | プリセット適用   | プリセットをステータスとして適用               |
+| `show_status_form`     | フォーム表示     | ステータス設定モーダルを表示                   |
+| `show_preset_selector` | プリセット選択   | プリセット選択モーダルを表示                   |
+| `get_team_status`      | チームステータス | チームメンバーのステータス一覧を取得           |
 
 ### 5.2 Function詳細設計
 
@@ -281,12 +282,12 @@ const ShowStatusFormDefinition = DefineFunction({
 
 ### 6.1 Workflow一覧
 
-| Workflow ID | 名前 | トリガー |
-|-------------|------|----------|
-| `SetStatusWorkflow` | ステータス設定 | Link trigger / Shortcut |
-| `QuickStatusWorkflow` | クイックステータス | Shortcut |
-| `TeamStatusWorkflow` | チームステータス | Link trigger |
-| `ManagePresetsWorkflow` | プリセット管理 | Link trigger |
+| Workflow ID             | 名前               | トリガー                |
+| ----------------------- | ------------------ | ----------------------- |
+| `SetStatusWorkflow`     | ステータス設定     | Link trigger / Shortcut |
+| `QuickStatusWorkflow`   | クイックステータス | Shortcut                |
+| `TeamStatusWorkflow`    | チームステータス   | Link trigger            |
+| `ManagePresetsWorkflow` | プリセット管理     | Link trigger            |
 
 ### 6.2 SetStatusWorkflow
 
@@ -503,7 +504,7 @@ const EXPIRATION_OPTIONS = [
 // ステータステキスト
 export const statusTextSchema = z.string()
   .max(100, "Status text must be 100 characters or less")
-  .transform(text => text.trim());
+  .transform((text) => text.trim());
 
 // ステータス絵文字
 export const statusEmojiSchema = z.string()
@@ -514,13 +515,13 @@ export const statusEmojiSchema = z.string()
 export const expirationMinutesSchema = z.number()
   .int()
   .min(0)
-  .max(525600);  // 最大1年
+  .max(525600); // 最大1年
 
 // プリセット名
 export const presetNameSchema = z.string()
   .min(1, "Preset name is required")
   .max(50, "Preset name must be 50 characters or less")
-  .transform(name => name.trim());
+  .transform((name) => name.trim());
 
 // ステータス設定入力
 export const setStatusInputSchema = z.object({
@@ -547,12 +548,12 @@ export const createPresetInputSchema = z.object({
 
 ### 10.1 エラーカテゴリ
 
-| カテゴリ | 説明 | 対処 |
-|----------|------|------|
-| ValidationError | 入力値の検証エラー | ユーザーにエラーメッセージを表示 |
-| ApiError | Slack API呼び出しエラー | リトライまたはエラーメッセージ表示 |
-| DatastoreError | Datastore操作エラー | ログ記録、エラーメッセージ表示 |
-| PermissionError | 権限不足エラー | 権限要求のガイダンス表示 |
+| カテゴリ        | 説明                    | 対処                               |
+| --------------- | ----------------------- | ---------------------------------- |
+| ValidationError | 入力値の検証エラー      | ユーザーにエラーメッセージを表示   |
+| ApiError        | Slack API呼び出しエラー | リトライまたはエラーメッセージ表示 |
+| DatastoreError  | Datastore操作エラー     | ログ記録、エラーメッセージ表示     |
+| PermissionError | 権限不足エラー          | 権限要求のガイダンス表示           |
 
 ---
 
@@ -560,12 +561,12 @@ export const createPresetInputSchema = z.object({
 
 ### 11.1 テストカテゴリ
 
-| カテゴリ | 対象 | カバレッジ目標 |
-|----------|------|----------------|
-| Unit Tests | 個別関数、ヘルパー | 80% |
-| Integration Tests | Workflow全体の流れ | 主要パス |
-| Validation Tests | Zodスキーマ | 正常系・異常系 |
-| Mock Tests | Slack API呼び出し | 全API |
+| カテゴリ          | 対象               | カバレッジ目標 |
+| ----------------- | ------------------ | -------------- |
+| Unit Tests        | 個別関数、ヘルパー | 80%            |
+| Integration Tests | Workflow全体の流れ | 主要パス       |
+| Validation Tests  | Zodスキーマ        | 正常系・異常系 |
+| Mock Tests        | Slack API呼び出し  | 全API          |
 
 ---
 
@@ -676,6 +677,6 @@ userScopes: [
 
 ## 変更履歴
 
-| バージョン | 日付 | 変更内容 |
-|------------|------|----------|
-| 1.0.0 | 2026-01-22 | 初版作成 |
+| バージョン | 日付       | 変更内容 |
+| ---------- | ---------- | -------- |
+| 1.0.0      | 2026-01-22 | 初版作成 |

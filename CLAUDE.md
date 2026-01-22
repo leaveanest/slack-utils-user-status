@@ -861,7 +861,7 @@ mcp_voicevox_speak({
 // ステータステキスト（最大100文字）
 export const statusTextSchema = z.string()
   .max(100, "Status text must be 100 characters or less")
-  .transform(text => text.trim());
+  .transform((text) => text.trim());
 
 // ステータス絵文字（:emoji: 形式）
 export const statusEmojiSchema = z.string()
@@ -897,9 +897,9 @@ export const presetNameSchema = z.string()
 // ステータス設定時の注意点
 const response = await client.users.profile.set({
   profile: {
-    status_text: "In a meeting",     // 最大100文字
-    status_emoji: ":calendar:",      // :emoji: 形式
-    status_expiration: 1706000000,   // Unix timestamp, 0で無期限
+    status_text: "In a meeting", // 最大100文字
+    status_emoji: ":calendar:", // :emoji: 形式
+    status_expiration: 1706000000, // Unix timestamp, 0で無期限
   },
 });
 

@@ -820,3 +820,111 @@ mcp_voicevox_speak({
 - **Zodでバリデーション**: 全ての入力値を型安全に検証
 
 **Happy Coding! 🚀**
+
+# CLAUDE.md 追記内容（user-status用）
+
+以下の内容を既存のCLAUDE.mdの末尾に追加してください。
+
+---
+
+## 🎯 slack-utils-user-status 固有ルール
+
+### プロジェクト概要
+
+**user-status** はSlackユーザーステータス管理機能を提供します。
+
+- **仕様書**: `docs/user-status-spec.md`
+- **実装計画**: `docs/user-status-impl-plan.md`
+
+### 使用するSlack API
+
+| API                 | 用途               | スコープ              |
+| ------------------- | ------------------ | --------------------- |
+| `users.profile.get` | ステータス取得     | `users.profile:read`  |
+| `users.profile.set` | ステータス設定     | `users.profile:write` |
+| `users.list`        | ユーザー一覧取得   | `users:read`          |
+| `emoji.list`        | カスタム絵文字一覧 | `emoji:read`          |
+
+### Datastore一覧
+
+| Datastore          | 用途                 |
+| ------------------ | -------------------- |
+| `status_presets`   | ステータスプリセット |
+| `status_schedules` | スケジュール設定     |
+| `status_history`   | ステータス変更履歴   |
+
+### バリデーションスキーマ
+
+`lib/validation/schemas.ts` に以下のスキーマを追加：
+
+```typescript
+// ステータステキスト（最大100文字）
+export const statusTextSchema = z.string()
+  .max(100, "Status text must be 100 characters or less")
+  .transform((text) => text.trim());
+
+// ステータス絵文字（:emoji: 形式）
+export const statusEmojiSchema = z.string()
+  .regex(/^:[a-z0-9_+-]+:$/, "Invalid emoji format")
+  .or(z.literal(""));
+
+// プリセット名（最大50文字）
+export const presetNameSchema = z.string()
+  .min(1, "Preset name is required")
+  .max(50, "Preset name must be 50 characters or less");
+```
+
+### i18nキー構造
+
+`locales/en.json` と `locales/ja.json` に `status` セクションを追加：
+
+```json
+{
+  "status": {
+    "functions": { ... },
+    "form": { ... },
+    "messages": { ... },
+    "errors": { ... }
+  }
+}
+```
+
+### API固有の注意点
+
+#### users.profile.set
+
+```typescript
+// ステータス設定時の注意点
+const response = await client.users.profile.set({
+  profile: {
+    status_text: "In a meeting", // 最大100文字
+    status_emoji: ":calendar:", // :emoji: 形式
+    status_expiration: 1706000000, // Unix timestamp, 0で無期限
+  },
+});
+
+// ユーザースコープが必要: users.profile:write
+```
+
+#### 有効期限の計算
+
+```typescript
+function calculateExpiration(minutes: number): number {
+  if (minutes <= 0) return 0;
+  return Math.floor(Date.now() / 1000) + minutes * 60;
+}
+```
+
+### ブランチ命名規則
+
+```
+feature/user-status-phase{N}-{description}
+例: feature/user-status-phase1-foundation
+```
+
+### PRタイトル形式
+
+```
+feat: user-status Phase {N} - {description}
+例: feat: user-status Phase 1 - 基盤構築（Datastore、型、バリデーション）
+```

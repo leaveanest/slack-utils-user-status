@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.0 (2026-01-22)
+
+
+### Features
+
+* add user-status documentation and implementation plan for Slack integration ([e35904a](https://github.com/leaveanest/slack-utils-user-status/commit/e35904a4027fc566e233cb5ea59e670d0d0eebcc))
+
 ## [1.9.1](https://github.com/leaveanest/slack-utils/compare/v1.9.0...v1.9.1) (2026-01-19)
 
 

@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.5.0](https://github.com/leaveanest/slack-utils-user-status/compare/v1.4.0...v1.5.0) (2026-01-23)
+
+
+### Features
+
+* user-status Phase 5 - チームステータス機能実装 ([90ddf3b](https://github.com/leaveanest/slack-utils-user-status/commit/90ddf3bcda5642c836cc883188aab945d08d9aaa))
+
+
+### Bug Fixes
+
+* PR [#16](https://github.com/leaveanest/slack-utils-user-status/issues/16) レビューフィードバック対応 ([0f81e88](https://github.com/leaveanest/slack-utils-user-status/commit/0f81e88f32aa568a28e0ba704190bc8ea249365c))
+
 ## [1.4.0](https://github.com/leaveanest/slack-utils-user-status/compare/v1.3.0...v1.4.0) (2026-01-23)
 
 

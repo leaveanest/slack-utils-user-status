@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/leaveanest/slack-utils-user-status/compare/v1.3.0...v1.4.0) (2026-01-23)
+
+
+### Features
+
+* user-status Phase 4 - ワークフローとモーダルUI実装 ([dd87015](https://github.com/leaveanest/slack-utils-user-status/commit/dd87015b1cbc4869fa609dd1503d4cc025f31b10))
+
 ## [1.3.0](https://github.com/leaveanest/slack-utils-user-status/compare/v1.2.0...v1.3.0) (2026-01-23)
 
 

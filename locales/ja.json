@@ -52,6 +52,22 @@
       "get_status": {
         "title": "ステータス取得",
         "description": "ユーザーのステータスを取得します"
+      },
+      "list_presets": {
+        "title": "プリセット一覧",
+        "description": "ユーザーのステータスプリセット一覧を取得します"
+      },
+      "create_preset": {
+        "title": "プリセット作成",
+        "description": "新しいステータスプリセットを作成します"
+      },
+      "delete_preset": {
+        "title": "プリセット削除",
+        "description": "ステータスプリセットを削除します"
+      },
+      "apply_preset": {
+        "title": "プリセット適用",
+        "description": "ステータスプリセットを適用します"
       }
     },
     "form": {

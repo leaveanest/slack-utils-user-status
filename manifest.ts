@@ -3,6 +3,10 @@ import { ExampleFunctionDefinition } from "./functions/example_function/mod.ts";
 import { SetStatusDefinition } from "./functions/set_status/mod.ts";
 import { ClearStatusDefinition } from "./functions/clear_status/mod.ts";
 import { GetStatusDefinition } from "./functions/get_status/mod.ts";
+import { ListPresetsDefinition } from "./functions/list_presets/mod.ts";
+import { CreatePresetDefinition } from "./functions/create_preset/mod.ts";
+import { DeletePresetDefinition } from "./functions/delete_preset/mod.ts";
+import { ApplyPresetDefinition } from "./functions/apply_preset/mod.ts";
 import ExampleWorkflow from "./workflows/example_workflow.ts";
 import { StatusPresetDatastore } from "./datastores/status_presets.ts";
 import { StatusScheduleDatastore } from "./datastores/status_schedules.ts";
@@ -23,6 +27,10 @@ export default Manifest({
     SetStatusDefinition,
     ClearStatusDefinition,
     GetStatusDefinition,
+    ListPresetsDefinition,
+    CreatePresetDefinition,
+    DeletePresetDefinition,
+    ApplyPresetDefinition,
   ],
   outgoingDomains: [],
   datastores: [

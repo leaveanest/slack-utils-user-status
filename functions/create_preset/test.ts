@@ -83,7 +83,7 @@ Deno.test({
 });
 
 Deno.test({
-  name: "getNextSortOrder: クエリエラー時は1を返す",
+  name: "getNextSortOrder: クエリエラー時は例外を投げる",
   sanitizeResources: false,
   sanitizeOps: false,
   fn: async () => {
@@ -99,9 +99,16 @@ Deno.test({
       },
     } as unknown as SlackAPIClient;
 
-    const sortOrder = await getNextSortOrder(mockClient, "U12345678");
-
-    assertEquals(sortOrder, 1);
+    try {
+      await getNextSortOrder(mockClient, "U12345678");
+      assertEquals(true, false, "Should have thrown an error");
+    } catch (error) {
+      assertEquals(error instanceof Error, true);
+      assertEquals(
+        (error as Error).message.includes("datastore_error"),
+        true,
+      );
+    }
   },
 });
 

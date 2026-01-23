@@ -179,6 +179,16 @@ export default SlackFunction(
         };
       }
 
+      // 所有者または共有プリセットかチェック
+      if (preset.user_id !== userId && !preset.is_shared) {
+        return {
+          outputs: {
+            success: false,
+            error: t("status.errors.unauthorized"),
+          },
+        };
+      }
+
       // ステータスを設定
       await setUserStatus(
         client,

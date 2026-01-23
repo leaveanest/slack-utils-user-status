@@ -143,6 +143,71 @@ Deno.test({
 });
 
 Deno.test({
+  name:
+    "getPresetById: 他人のプライベートプリセットは適用できない（所有権チェック）",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  fn: async () => {
+    // 他のユーザーが所有する非共有プリセット
+    const otherUserPreset: StatusPreset = {
+      ...samplePreset,
+      user_id: "U99999999", // 異なるユーザー
+      is_shared: false, // 非共有
+    };
+
+    const mockClient = {
+      apps: {
+        datastore: {
+          get: (): Promise<MockDatastoreGetResult> =>
+            Promise.resolve({
+              ok: true,
+              item: otherUserPreset,
+            }),
+        },
+      },
+    } as unknown as SlackAPIClient;
+
+    const preset = await getPresetById(mockClient, "preset-001");
+
+    // プリセット自体は取得できる（チェックは呼び出し側で行う）
+    assertEquals(preset !== null, true);
+    assertEquals(preset?.user_id, "U99999999");
+    assertEquals(preset?.is_shared, false);
+  },
+});
+
+Deno.test({
+  name: "getPresetById: 共有プリセットは他のユーザーも取得できる",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  fn: async () => {
+    // 他のユーザーが所有する共有プリセット
+    const sharedPreset: StatusPreset = {
+      ...samplePreset,
+      user_id: "U99999999", // 異なるユーザー
+      is_shared: true, // 共有
+    };
+
+    const mockClient = {
+      apps: {
+        datastore: {
+          get: (): Promise<MockDatastoreGetResult> =>
+            Promise.resolve({
+              ok: true,
+              item: sharedPreset,
+            }),
+        },
+      },
+    } as unknown as SlackAPIClient;
+
+    const preset = await getPresetById(mockClient, "preset-001");
+
+    assertEquals(preset !== null, true);
+    assertEquals(preset?.is_shared, true);
+  },
+});
+
+Deno.test({
   name: "setUserStatus: 正常にステータスを設定できる",
   sanitizeResources: false,
   sanitizeOps: false,

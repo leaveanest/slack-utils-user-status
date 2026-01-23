@@ -109,7 +109,12 @@ export async function getNextSortOrder(
     expression_values: { ":user_id": userId },
   }) as unknown as DatastoreQueryResult;
 
-  if (!result.ok || !result.items || result.items.length === 0) {
+  if (!result.ok) {
+    const errorCode = result.error ?? "unknown_error";
+    throw new Error(t("status.errors.api_call_failed", { error: errorCode }));
+  }
+
+  if (!result.items || result.items.length === 0) {
     return 1;
   }
 

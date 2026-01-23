@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.3.0](https://github.com/leaveanest/slack-utils-user-status/compare/v1.2.0...v1.3.0) (2026-01-23)
+
+
+### Features
+
+* user-status Phase 3 - プリセットCRUD実装 ([c221c36](https://github.com/leaveanest/slack-utils-user-status/commit/c221c36452574f03bed73c655917b58eac65da19))
+
+
+### Bug Fixes
+
+* PR [#12](https://github.com/leaveanest/slack-utils-user-status/issues/12) レビューフィードバック対応 ([f57edd0](https://github.com/leaveanest/slack-utils-user-status/commit/f57edd0ba528e80c967f7c4bff633530553b6cec))
+
 ## [1.2.0](https://github.com/leaveanest/slack-utils-user-status/compare/v1.1.0...v1.2.0) (2026-01-23)
 
 

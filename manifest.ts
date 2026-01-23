@@ -1,5 +1,8 @@
 import { Manifest } from "deno-slack-sdk/mod.ts";
 import { ExampleFunctionDefinition } from "./functions/example_function/mod.ts";
+import { SetStatusDefinition } from "./functions/set_status/mod.ts";
+import { ClearStatusDefinition } from "./functions/clear_status/mod.ts";
+import { GetStatusDefinition } from "./functions/get_status/mod.ts";
 import ExampleWorkflow from "./workflows/example_workflow.ts";
 import { StatusPresetDatastore } from "./datastores/status_presets.ts";
 import { StatusScheduleDatastore } from "./datastores/status_schedules.ts";
@@ -15,7 +18,12 @@ export default Manifest({
   description: APP_DESCRIPTION,
   icon: "assets/icon.png",
   workflows: [ExampleWorkflow],
-  functions: [ExampleFunctionDefinition],
+  functions: [
+    ExampleFunctionDefinition,
+    SetStatusDefinition,
+    ClearStatusDefinition,
+    GetStatusDefinition,
+  ],
   outgoingDomains: [],
   datastores: [
     StatusPresetDatastore,

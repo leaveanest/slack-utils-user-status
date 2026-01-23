@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/leaveanest/slack-utils-user-status/compare/v1.1.0...v1.2.0) (2026-01-23)
+
+
+### Features
+
+* user-status Phase 2 - コアFunction実装 ([9a3eaef](https://github.com/leaveanest/slack-utils-user-status/commit/9a3eaef065b1f5c69fb3f808712ac52bc8257b99))
+
 ## [1.1.0](https://github.com/leaveanest/slack-utils-user-status/compare/v1.0.0...v1.1.0) (2026-01-23)
 
 

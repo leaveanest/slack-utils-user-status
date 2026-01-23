@@ -7,6 +7,7 @@ import type { SlackAPIClient } from "deno-slack-sdk/types.ts";
 import { t } from "../../lib/i18n/mod.ts";
 import { userIdSchema } from "../../lib/validation/schemas.ts";
 import type { StatusPreset } from "../../lib/types/status.ts";
+import { recordStatusHistorySilent } from "../../lib/status/history.ts";
 
 /**
  * プリセット適用Function定義
@@ -196,6 +197,16 @@ export default SlackFunction(
         preset.status_text,
         preset.status_emoji,
         preset.duration_minutes,
+      );
+
+      // 履歴を記録（エラーは無視）
+      await recordStatusHistorySilent(
+        client,
+        userId,
+        preset.status_text,
+        preset.status_emoji,
+        calculateExpiration(preset.duration_minutes),
+        "preset",
       );
 
       return {

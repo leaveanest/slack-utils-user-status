@@ -14,7 +14,14 @@
       "channel_id_format": "チャンネルIDは 'C' で始まり、大文字の英数字が続く必要があります",
       "user_id_empty": "ユーザーIDを空にすることはできません",
       "user_id_format": "ユーザーIDは 'U' または 'W' で始まり、大文字の英数字が続く必要があります",
-      "value_empty": "値を空にすることはできません"
+      "value_empty": "値を空にすることはできません",
+      "status_text_too_long": "ステータステキストは{max}文字以下である必要があります",
+      "status_emoji_format": "無効な絵文字形式です。:emoji: 形式で入力してください（例: :calendar:）",
+      "expiration_not_integer": "有効期限（分）は整数である必要があります",
+      "expiration_min": "有効期限（分）は{min}以上である必要があります",
+      "expiration_max": "有効期限（分）は{max}以下である必要があります（1年）",
+      "preset_name_empty": "プリセット名を空にすることはできません",
+      "preset_name_too_long": "プリセット名は{max}文字以下である必要があります"
     }
   },
   "messages": {
@@ -27,5 +34,55 @@
     "completed": "ワークフローが完了しました",
     "loading_channel": "チャンネル情報を読み込み中...",
     "channel_loaded": "チャンネル {name} が正常に読み込まれました"
+  },
+  "status": {
+    "app": {
+      "name": "ステータスマネージャー",
+      "description": "Slackのステータスを効率的に管理"
+    },
+    "functions": {
+      "set_status": {
+        "title": "ステータス設定",
+        "description": "Slackのステータスを設定します"
+      },
+      "clear_status": {
+        "title": "ステータスクリア",
+        "description": "Slackのステータスをクリアします"
+      },
+      "get_status": {
+        "title": "ステータス取得",
+        "description": "ユーザーのステータスを取得します"
+      }
+    },
+    "form": {
+      "status_text": {
+        "label": "ステータステキスト",
+        "placeholder": "今の状況は？"
+      },
+      "status_emoji": {
+        "label": "ステータス絵文字",
+        "placeholder": ":emoji:"
+      },
+      "expiration": {
+        "label": "クリアするまでの時間"
+      },
+      "save_preset": {
+        "label": "プリセットとして保存"
+      }
+    },
+    "messages": {
+      "status_updated": "ステータスを更新しました！",
+      "status_cleared": "ステータスをクリアしました。",
+      "preset_saved": "プリセット「{name}」を保存しました。",
+      "preset_deleted": "プリセットを削除しました。",
+      "preset_applied": "プリセットを適用しました。"
+    },
+    "errors": {
+      "api_call_failed": "API呼び出しに失敗しました: {error}",
+      "status_text_too_long": "ステータステキストは100文字以下である必要があります",
+      "invalid_emoji": "無効な絵文字形式です。:emoji: 形式で入力してください",
+      "preset_not_found": "プリセットが見つかりません",
+      "unauthorized": "この操作を実行する権限がありません"
+    }
   }
 }

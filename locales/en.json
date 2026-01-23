@@ -14,7 +14,14 @@
       "channel_id_format": "Channel ID must start with 'C' followed by uppercase alphanumeric characters",
       "user_id_empty": "User ID cannot be empty",
       "user_id_format": "User ID must start with 'U' or 'W' followed by uppercase alphanumeric characters",
-      "value_empty": "Value cannot be empty"
+      "value_empty": "Value cannot be empty",
+      "status_text_too_long": "Status text must be {max} characters or less",
+      "status_emoji_format": "Invalid emoji format. Use :emoji: format (e.g., :calendar:)",
+      "expiration_not_integer": "Expiration minutes must be an integer",
+      "expiration_min": "Expiration minutes must be at least {min}",
+      "expiration_max": "Expiration minutes must be at most {max} (1 year)",
+      "preset_name_empty": "Preset name cannot be empty",
+      "preset_name_too_long": "Preset name must be {max} characters or less"
     }
   },
   "messages": {
@@ -27,5 +34,55 @@
     "completed": "Workflow completed",
     "loading_channel": "Loading channel information...",
     "channel_loaded": "Channel {name} loaded successfully"
+  },
+  "status": {
+    "app": {
+      "name": "Status Manager",
+      "description": "Manage your Slack status efficiently"
+    },
+    "functions": {
+      "set_status": {
+        "title": "Set Status",
+        "description": "Set your Slack status"
+      },
+      "clear_status": {
+        "title": "Clear Status",
+        "description": "Clear your Slack status"
+      },
+      "get_status": {
+        "title": "Get Status",
+        "description": "Get user status"
+      }
+    },
+    "form": {
+      "status_text": {
+        "label": "Status Text",
+        "placeholder": "What's your status?"
+      },
+      "status_emoji": {
+        "label": "Status Emoji",
+        "placeholder": ":emoji:"
+      },
+      "expiration": {
+        "label": "Clear after"
+      },
+      "save_preset": {
+        "label": "Save as preset"
+      }
+    },
+    "messages": {
+      "status_updated": "Status updated successfully!",
+      "status_cleared": "Status cleared.",
+      "preset_saved": "Preset \"{name}\" saved.",
+      "preset_deleted": "Preset deleted.",
+      "preset_applied": "Preset applied."
+    },
+    "errors": {
+      "api_call_failed": "API call failed: {error}",
+      "status_text_too_long": "Status text must be 100 characters or less",
+      "invalid_emoji": "Invalid emoji format. Use :emoji: format",
+      "preset_not_found": "Preset not found",
+      "unauthorized": "You don't have permission to perform this action"
+    }
   }
 }

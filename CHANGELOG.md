@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.0](https://github.com/leaveanest/slack-utils-user-status/compare/v1.0.0...v1.1.0) (2026-01-23)
+
+
+### Features
+
+* user-status Phase 1 - Datastore、型、バリデーション追加 ([77481eb](https://github.com/leaveanest/slack-utils-user-status/commit/77481eb59ad35b83f8e10f170fa79f0996937568))
+
+
+### Bug Fixes
+
+* first-interaction v3のinput名をアンダースコアに修正 ([3173324](https://github.com/leaveanest/slack-utils-user-status/commit/3173324a7bd73c5f75566f71dc1dae451f862262))
+
 ## 1.0.0 (2026-01-22)
 
 

@@ -52,6 +52,22 @@
       "get_status": {
         "title": "Get Status",
         "description": "Get user status"
+      },
+      "list_presets": {
+        "title": "List Presets",
+        "description": "List user's status presets"
+      },
+      "create_preset": {
+        "title": "Create Preset",
+        "description": "Create a new status preset"
+      },
+      "delete_preset": {
+        "title": "Delete Preset",
+        "description": "Delete a status preset"
+      },
+      "apply_preset": {
+        "title": "Apply Preset",
+        "description": "Apply a status preset"
       }
     },
     "form": {

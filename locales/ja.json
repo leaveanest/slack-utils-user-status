@@ -71,6 +71,9 @@
       }
     },
     "form": {
+      "title": "ステータスを設定",
+      "submit": "ステータスを設定",
+      "cancel": "キャンセル",
       "status_text": {
         "label": "ステータステキスト",
         "placeholder": "今の状況は？"
@@ -80,18 +83,40 @@
         "placeholder": ":emoji:"
       },
       "expiration": {
-        "label": "クリアするまでの時間"
+        "label": "クリアするまでの時間",
+        "options": {
+          "no_expiration": "クリアしない",
+          "30_minutes": "30分後",
+          "1_hour": "1時間後",
+          "2_hours": "2時間後",
+          "4_hours": "4時間後",
+          "today": "今日中"
+        }
       },
       "save_preset": {
-        "label": "プリセットとして保存"
+        "label": "プリセットとして保存",
+        "name_label": "プリセット名",
+        "name_placeholder": "プリセット名を入力"
       }
+    },
+    "selector": {
+      "title": "クイックステータス",
+      "your_presets": "あなたのプリセット",
+      "shared_presets": "共有プリセット",
+      "no_presets": "プリセットがありません。「ステータスを設定」で作成してください。",
+      "apply": "適用",
+      "clear_status": "ステータスをクリア"
     },
     "messages": {
       "status_updated": "ステータスを更新しました！",
       "status_cleared": "ステータスをクリアしました。",
       "preset_saved": "プリセット「{name}」を保存しました。",
       "preset_deleted": "プリセットを削除しました。",
-      "preset_applied": "プリセットを適用しました。"
+      "preset_applied": "プリセットを適用しました。",
+      "loading": "読み込み中...",
+      "status_set": "ステータスを設定しました！",
+      "modal_open_failed": "モーダルを開けませんでした: {error}",
+      "status_set_and_preset_saved": "ステータスを設定し、プリセット「{name}」を保存しました！"
     },
     "errors": {
       "api_call_failed": "API呼び出しに失敗しました: {error}",

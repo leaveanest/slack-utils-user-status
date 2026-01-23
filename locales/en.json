@@ -71,6 +71,9 @@
       }
     },
     "form": {
+      "title": "Set Your Status",
+      "submit": "Set Status",
+      "cancel": "Cancel",
       "status_text": {
         "label": "Status Text",
         "placeholder": "What's your status?"
@@ -80,18 +83,40 @@
         "placeholder": ":emoji:"
       },
       "expiration": {
-        "label": "Clear after"
+        "label": "Clear after",
+        "options": {
+          "no_expiration": "Don't clear",
+          "30_minutes": "30 minutes",
+          "1_hour": "1 hour",
+          "2_hours": "2 hours",
+          "4_hours": "4 hours",
+          "today": "Today"
+        }
       },
       "save_preset": {
-        "label": "Save as preset"
+        "label": "Save as preset",
+        "name_label": "Preset name",
+        "name_placeholder": "Enter preset name"
       }
+    },
+    "selector": {
+      "title": "Quick Status",
+      "your_presets": "Your Presets",
+      "shared_presets": "Shared Presets",
+      "no_presets": "No presets yet. Create one in Set Status.",
+      "apply": "Apply",
+      "clear_status": "Clear Status"
     },
     "messages": {
       "status_updated": "Status updated successfully!",
       "status_cleared": "Status cleared.",
       "preset_saved": "Preset \"{name}\" saved.",
       "preset_deleted": "Preset deleted.",
-      "preset_applied": "Preset applied."
+      "preset_applied": "Preset applied.",
+      "loading": "Loading...",
+      "status_set": "Status set!",
+      "modal_open_failed": "Failed to open modal: {error}",
+      "status_set_and_preset_saved": "Status set and preset \"{name}\" saved!"
     },
     "errors": {
       "api_call_failed": "API call failed: {error}",

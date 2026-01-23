@@ -1,5 +1,6 @@
 import { assertEquals } from "std/testing/asserts.ts";
 import {
+  buildErrorView,
   buildLoadingView,
   buildMemberStatusBlock,
   buildTeamStatusBlocks,
@@ -231,5 +232,35 @@ Deno.test({
     const blocks = view.blocks as Array<Record<string, unknown>>;
     assertEquals(blocks.length > 0, true);
     assertEquals(blocks[0].type, "header");
+  },
+});
+
+Deno.test({
+  name: "buildErrorView: 正しいエラービュー構造を返す",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  fn: () => {
+    const userId = "U12345678";
+    const errorMessage = "API call failed: ratelimited";
+
+    const view = buildErrorView(userId, errorMessage);
+
+    assertEquals(view.type, "modal");
+    assertEquals(view.callback_id, TEAM_STATUS_MODAL_CALLBACK_ID);
+
+    const metadata: PrivateMetadata = JSON.parse(
+      view.private_metadata as string,
+    );
+    assertEquals(metadata.user_id, userId);
+
+    const blocks = view.blocks as Array<Record<string, unknown>>;
+    assertEquals(blocks.length, 1);
+    assertEquals(blocks[0].type, "section");
+
+    const text = blocks[0].text as Record<string, unknown>;
+    assertEquals(text.type, "mrkdwn");
+    assertEquals((text.text as string).includes(":warning:"), true);
+    // エラーメッセージが含まれていることを確認
+    assertEquals((text.text as string).includes(errorMessage), true);
   },
 });

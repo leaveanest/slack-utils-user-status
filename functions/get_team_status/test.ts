@@ -26,6 +26,9 @@ interface MockUsersListResponse {
   ok: boolean;
   members?: MockMember[];
   error?: string;
+  response_metadata?: {
+    next_cursor?: string;
+  };
 }
 
 // テスト用のモックメンバー
@@ -304,5 +307,149 @@ Deno.test({
     const filtered = filterMembersWithStatus(members);
 
     assertEquals(filtered.length, 0);
+  },
+});
+
+Deno.test({
+  name: "getTeamMemberStatuses: ページネーションで複数回API呼び出しを行う",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  fn: async () => {
+    let callCount = 0;
+
+    const mockClient = {
+      users: {
+        list: (
+          params: { limit?: number; cursor?: string },
+        ): Promise<MockUsersListResponse> => {
+          callCount++;
+
+          if (callCount === 1) {
+            // 最初の呼び出し: 2人のメンバーを返し、next_cursorを設定
+            assertEquals(params.cursor, undefined);
+            return Promise.resolve({
+              ok: true,
+              members: [
+                createMockMember({ id: "U11111111" }),
+                createMockMember({ id: "U22222222" }),
+              ],
+              response_metadata: {
+                next_cursor: "cursor_page_2",
+              },
+            });
+          } else {
+            // 2回目の呼び出し: 1人のメンバーを返し、カーソルなし
+            assertEquals(params.cursor, "cursor_page_2");
+            return Promise.resolve({
+              ok: true,
+              members: [
+                createMockMember({ id: "U33333333" }),
+              ],
+            });
+          }
+        },
+      },
+    } as unknown as SlackAPIClient;
+
+    const members = await getTeamMemberStatuses(mockClient, 50);
+
+    assertEquals(callCount, 2);
+    assertEquals(members.length, 3);
+    assertEquals(members[0].user_id, "U11111111");
+    assertEquals(members[1].user_id, "U22222222");
+    assertEquals(members[2].user_id, "U33333333");
+  },
+});
+
+Deno.test({
+  name: "getTeamMemberStatuses: limitに達したらページネーションを停止する",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  fn: async () => {
+    let callCount = 0;
+
+    const mockClient = {
+      users: {
+        list: (): Promise<MockUsersListResponse> => {
+          callCount++;
+
+          if (callCount === 1) {
+            return Promise.resolve({
+              ok: true,
+              members: [
+                createMockMember({ id: "U11111111" }),
+                createMockMember({ id: "U22222222" }),
+              ],
+              response_metadata: {
+                next_cursor: "cursor_page_2",
+              },
+            });
+          } else {
+            // limitに達したら呼ばれないはず
+            return Promise.resolve({
+              ok: true,
+              members: [
+                createMockMember({ id: "U33333333" }),
+              ],
+            });
+          }
+        },
+      },
+    } as unknown as SlackAPIClient;
+
+    // limit=2で呼び出し
+    const members = await getTeamMemberStatuses(mockClient, 2);
+
+    // 最初のレスポンスで2人取得してlimitに達するので、2回目は呼ばれない
+    assertEquals(callCount, 1);
+    assertEquals(members.length, 2);
+  },
+});
+
+Deno.test({
+  name:
+    "getTeamMemberStatuses: ボット除外後にlimitに達したら次ページを取得する",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  fn: async () => {
+    let callCount = 0;
+
+    const mockClient = {
+      users: {
+        list: (): Promise<MockUsersListResponse> => {
+          callCount++;
+
+          if (callCount === 1) {
+            // 2人返すが、1人はボット
+            return Promise.resolve({
+              ok: true,
+              members: [
+                createMockMember({ id: "U11111111" }),
+                createMockMember({ id: "B22222222", is_bot: true }),
+              ],
+              response_metadata: {
+                next_cursor: "cursor_page_2",
+              },
+            });
+          } else {
+            return Promise.resolve({
+              ok: true,
+              members: [
+                createMockMember({ id: "U33333333" }),
+              ],
+            });
+          }
+        },
+      },
+    } as unknown as SlackAPIClient;
+
+    // limit=2で呼び出し
+    const members = await getTeamMemberStatuses(mockClient, 2);
+
+    // ボットを除外すると1人しかいないので、次ページを取得
+    assertEquals(callCount, 2);
+    assertEquals(members.length, 2);
+    assertEquals(members[0].user_id, "U11111111");
+    assertEquals(members[1].user_id, "U33333333");
   },
 });

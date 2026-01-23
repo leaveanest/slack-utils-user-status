@@ -90,6 +90,9 @@ interface UsersListResponse {
     };
   }>;
   error?: string;
+  response_metadata?: {
+    next_cursor?: string;
+  };
 }
 
 /**
@@ -97,6 +100,7 @@ interface UsersListResponse {
  *
  * users.list APIを使用してチームメンバーを取得し、
  * 各メンバーのプロファイル情報からステータスを抽出します。
+ * ページネーションに対応し、limitまでのメンバーを取得します。
  *
  * @param client - Slack APIクライアント
  * @param limit - 取得するメンバーの最大数
@@ -115,34 +119,48 @@ export async function getTeamMemberStatuses(
   client: SlackAPIClient,
   limit: number,
 ): Promise<TeamMemberStatus[]> {
-  const response = await client.users.list({
-    limit,
-  }) as UsersListResponse;
-
-  if (!response.ok) {
-    const errorCode = response.error ?? "unknown_error";
-    throw new Error(t("status.errors.api_call_failed", { error: errorCode }));
-  }
-
   const members: TeamMemberStatus[] = [];
+  let cursor: string | undefined;
 
-  for (const user of response.members ?? []) {
-    // ボット、アプリユーザー、削除済みユーザーを除外
-    if (user.is_bot || user.is_app_user || user.deleted) {
-      continue;
+  do {
+    // API最大は200、残り必要数を考慮してリクエスト
+    const requestLimit = Math.min(limit - members.length, 200);
+
+    const response = await client.users.list({
+      limit: requestLimit,
+      cursor,
+    }) as UsersListResponse;
+
+    if (!response.ok) {
+      const errorCode = response.error ?? "unknown_error";
+      throw new Error(t("status.errors.api_call_failed", { error: errorCode }));
     }
 
-    const profile = user.profile ?? {};
+    for (const user of response.members ?? []) {
+      // ボット、アプリユーザー、削除済みユーザーを除外
+      if (user.is_bot || user.is_app_user || user.deleted) {
+        continue;
+      }
 
-    members.push({
-      user_id: user.id,
-      display_name: profile.display_name || profile.real_name || user.id,
-      real_name: profile.real_name || "",
-      status_text: profile.status_text || "",
-      status_emoji: profile.status_emoji || "",
-      status_expiration: profile.status_expiration || 0,
-    });
-  }
+      const profile = user.profile ?? {};
+
+      members.push({
+        user_id: user.id,
+        display_name: profile.display_name || profile.real_name || user.id,
+        real_name: profile.real_name || "",
+        status_text: profile.status_text || "",
+        status_emoji: profile.status_emoji || "",
+        status_expiration: profile.status_expiration || 0,
+      });
+
+      // limitに達したら終了
+      if (members.length >= limit) {
+        return members;
+      }
+    }
+
+    cursor = response.response_metadata?.next_cursor;
+  } while (cursor && members.length < limit);
 
   return members;
 }

@@ -130,7 +130,8 @@
       "no_status": "ステータス未設定",
       "member_count": "{count}人のメンバー",
       "loading": "チームステータスを読み込み中...",
-      "no_members": "チームメンバーが見つかりません"
+      "no_members": "チームメンバーが見つかりません",
+      "error": "エラーが発生しました: {error}"
     }
   }
 }

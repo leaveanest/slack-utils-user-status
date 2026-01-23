@@ -252,12 +252,52 @@ export function buildTeamStatusView(
   };
 }
 
+/**
+ * エラー表示モーダルビューを構築
+ *
+ * @param userId - ユーザーID
+ * @param errorMessage - エラーメッセージ
+ * @returns モーダルビューオブジェクト
+ */
+export function buildErrorView(
+  userId: string,
+  errorMessage: string,
+): Record<string, unknown> {
+  const privateMetadata: PrivateMetadata = { user_id: userId };
+
+  return {
+    type: "modal",
+    callback_id: TEAM_STATUS_MODAL_CALLBACK_ID,
+    private_metadata: JSON.stringify(privateMetadata),
+    title: {
+      type: "plain_text",
+      text: t("status.team.title"),
+    },
+    close: {
+      type: "plain_text",
+      text: t("status.form.cancel"),
+    },
+    blocks: [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `:warning: ${t("status.team.error", { error: errorMessage })}`,
+        },
+      },
+    ],
+  };
+}
+
 export default SlackFunction(
   ShowTeamStatusDefinition,
   async ({ inputs, client }) => {
+    let viewId: string | undefined;
+    let userId: string = "";
+
     try {
       // ユーザーIDのバリデーション
-      const userId = userIdSchema.parse(inputs.user_id);
+      userId = userIdSchema.parse(inputs.user_id);
       const limit = inputs.limit || 50;
 
       // ローディングモーダルを表示（3秒タイムアウト対策）
@@ -275,7 +315,7 @@ export default SlackFunction(
         );
       }
 
-      const viewId = (openResult.view as { id: string })?.id;
+      viewId = (openResult.view as { id: string })?.id;
 
       // チームメンバーのステータスを取得
       const members = await getTeamMemberStatuses(
@@ -299,6 +339,19 @@ export default SlackFunction(
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       console.error("show_team_status error:", message);
+
+      // viewIdが取得できている場合はエラー表示に更新
+      if (viewId) {
+        try {
+          const errorView = buildErrorView(userId, message);
+          await client.views.update({
+            view_id: viewId,
+            view: errorView,
+          });
+        } catch (updateError) {
+          console.error("Failed to update modal with error:", updateError);
+        }
+      }
 
       return {
         outputs: {

@@ -124,6 +124,14 @@
       "invalid_emoji": "Invalid emoji format. Use :emoji: format",
       "preset_not_found": "Preset not found",
       "unauthorized": "You don't have permission to perform this action"
+    },
+    "team": {
+      "title": "Team Status",
+      "no_status": "No status set",
+      "member_count": "{count} members",
+      "loading": "Loading team status...",
+      "no_members": "No team members found",
+      "error": "An error occurred: {error}"
     }
   }
 }

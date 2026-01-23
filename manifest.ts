@@ -9,9 +9,12 @@ import { DeletePresetDefinition } from "./functions/delete_preset/mod.ts";
 import { ApplyPresetDefinition } from "./functions/apply_preset/mod.ts";
 import { ShowStatusFormDefinition } from "./functions/show_status_form/mod.ts";
 import { ShowPresetSelectorDefinition } from "./functions/show_preset_selector/mod.ts";
+import { GetTeamStatusDefinition } from "./functions/get_team_status/mod.ts";
+import { ShowTeamStatusDefinition } from "./functions/show_team_status/mod.ts";
 import ExampleWorkflow from "./workflows/example_workflow.ts";
 import { SetStatusWorkflow } from "./workflows/set_status_workflow.ts";
 import { QuickStatusWorkflow } from "./workflows/quick_status_workflow.ts";
+import { TeamStatusWorkflow } from "./workflows/team_status_workflow.ts";
 import { StatusPresetDatastore } from "./datastores/status_presets.ts";
 import { StatusScheduleDatastore } from "./datastores/status_schedules.ts";
 import { StatusHistoryDatastore } from "./datastores/status_history.ts";
@@ -25,7 +28,12 @@ export default Manifest({
   name: APP_NAME,
   description: APP_DESCRIPTION,
   icon: "assets/icon.png",
-  workflows: [ExampleWorkflow, SetStatusWorkflow, QuickStatusWorkflow],
+  workflows: [
+    ExampleWorkflow,
+    SetStatusWorkflow,
+    QuickStatusWorkflow,
+    TeamStatusWorkflow,
+  ],
   functions: [
     ExampleFunctionDefinition,
     SetStatusDefinition,
@@ -37,6 +45,8 @@ export default Manifest({
     ApplyPresetDefinition,
     ShowStatusFormDefinition,
     ShowPresetSelectorDefinition,
+    GetTeamStatusDefinition,
+    ShowTeamStatusDefinition,
   ],
   outgoingDomains: [],
   datastores: [

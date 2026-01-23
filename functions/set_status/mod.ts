@@ -7,6 +7,7 @@ import {
   userIdSchema,
 } from "../../lib/validation/schemas.ts";
 import type { UserStatus } from "../../lib/types/status.ts";
+import { recordStatusHistorySilent } from "../../lib/status/history.ts";
 
 /**
  * ステータス設定Function定義
@@ -181,6 +182,16 @@ export default SlackFunction(
         validatedInput.status_text,
         validatedInput.status_emoji,
         validatedInput.expiration_minutes,
+      );
+
+      // 履歴を記録（エラーは無視）
+      await recordStatusHistorySilent(
+        client,
+        userId,
+        validatedInput.status_text,
+        validatedInput.status_emoji,
+        calculateExpiration(validatedInput.expiration_minutes),
+        "manual",
       );
 
       return {

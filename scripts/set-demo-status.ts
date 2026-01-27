@@ -7,7 +7,7 @@ const response = await setStatusWithUserToken(
   "U0812GLUZD2",
   "Claude Code実装完了！",
   ":rocket:",
-  0  // 無期限
+  0, // 無期限
 );
 
 if (response.ok) {

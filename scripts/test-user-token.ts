@@ -33,7 +33,9 @@ async function main() {
   if (!testUserId) {
     console.log("\n⚠️  TEST_USER_ID環境変数が設定されていません");
     console.log("   テストをスキップします");
-    console.log("\n   使用方法: TEST_USER_ID=U12345678 deno run --allow-env --allow-read --allow-net scripts/test-user-token.ts");
+    console.log(
+      "\n   使用方法: TEST_USER_ID=U12345678 deno run --allow-env --allow-read --allow-net scripts/test-user-token.ts",
+    );
     Deno.exit(0);
   }
 

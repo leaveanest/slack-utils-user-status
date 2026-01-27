@@ -7,6 +7,7 @@ import type { SlackAPIClient } from "deno-slack-sdk/types.ts";
 import { t } from "../../lib/i18n/mod.ts";
 import { userIdSchema } from "../../lib/validation/schemas.ts";
 import type { StatusPreset } from "../../lib/types/status.ts";
+import { StatusPresetType } from "../../lib/slack/types.ts";
 
 /**
  * プリセット一覧取得Function定義
@@ -30,18 +31,14 @@ export const ListPresetsDefinition = DefineFunction({
       presets: {
         type: Schema.types.array,
         items: {
-          type: Schema.types.object,
-          properties: {},
-          required: [],
+          type: StatusPresetType,
         },
         description: "User's presets",
       },
       shared_presets: {
         type: Schema.types.array,
         items: {
-          type: Schema.types.object,
-          properties: {},
-          required: [],
+          type: StatusPresetType,
         },
         description: "Shared presets from other users",
       },
@@ -136,6 +133,22 @@ export async function getSharedPresets(
   );
 }
 
+/**
+ * Slack SDKの出力用にプリセットを変換
+ * duration_minutes の null を 0 に変換（Slack SDKは null を許容しない）
+ *
+ * @param preset - 変換元のプリセット
+ * @returns Slack SDK互換のプリセット
+ */
+function toOutputPreset(
+  preset: StatusPreset,
+): Omit<StatusPreset, "duration_minutes"> & { duration_minutes: number } {
+  return {
+    ...preset,
+    duration_minutes: preset.duration_minutes ?? 0,
+  };
+}
+
 export default SlackFunction(
   ListPresetsDefinition,
   async ({ inputs, client }) => {
@@ -159,8 +172,8 @@ export default SlackFunction(
 
       return {
         outputs: {
-          presets: sortedPresets,
-          shared_presets: sortedSharedPresets,
+          presets: sortedPresets.map(toOutputPreset),
+          shared_presets: sortedSharedPresets.map(toOutputPreset),
           count: sortedPresets.length + sortedSharedPresets.length,
         },
       };

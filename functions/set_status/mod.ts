@@ -8,6 +8,7 @@ import {
 } from "../../lib/validation/schemas.ts";
 import type { UserStatus } from "../../lib/types/status.ts";
 import { recordStatusHistorySilent } from "../../lib/status/history.ts";
+import { setStatusWithUserToken } from "../../lib/slack/user-token.ts";
 
 /**
  * ステータス設定Function定義
@@ -121,7 +122,10 @@ export async function getCurrentStatus(
 /**
  * ユーザーのステータスを設定
  *
- * @param client - Slack APIクライアント
+ * Admin User Token を使用して users.profile.set API を呼び出します。
+ * Bot Token では他ユーザーのステータスを変更できないため、
+ * 環境変数 SLACK_ADMIN_USER_TOKEN に設定された User OAuth Token を使用します。
+ *
  * @param userId - ユーザーID
  * @param statusText - ステータステキスト
  * @param statusEmoji - ステータス絵文字
@@ -130,11 +134,10 @@ export async function getCurrentStatus(
  *
  * @example
  * ```typescript
- * await setUserStatus(client, "U12345678", "In a meeting", ":calendar:", 60);
+ * await setUserStatus("U12345678", "In a meeting", ":calendar:", 60);
  * ```
  */
 export async function setUserStatus(
-  client: SlackAPIClient,
   userId: string,
   statusText: string,
   statusEmoji: string,
@@ -142,14 +145,12 @@ export async function setUserStatus(
 ): Promise<void> {
   const statusExpiration = calculateExpiration(expirationMinutes);
 
-  const response = await client.users.profile.set({
-    user: userId,
-    profile: JSON.stringify({
-      status_text: statusText,
-      status_emoji: statusEmoji,
-      status_expiration: statusExpiration,
-    }),
-  });
+  const response = await setStatusWithUserToken(
+    userId,
+    statusText,
+    statusEmoji,
+    statusExpiration,
+  );
 
   if (!response.ok) {
     const errorCode = response.error ?? "unknown_error";
@@ -177,7 +178,6 @@ export default SlackFunction(
 
       // ステータスを設定
       await setUserStatus(
-        client,
         userId,
         validatedInput.status_text,
         validatedInput.status_emoji,

@@ -31,6 +31,8 @@ export const ListPresetsDefinition = DefineFunction({
         type: Schema.types.array,
         items: {
           type: Schema.types.object,
+          properties: {},
+          required: [],
         },
         description: "User's presets",
       },
@@ -38,6 +40,8 @@ export const ListPresetsDefinition = DefineFunction({
         type: Schema.types.array,
         items: {
           type: Schema.types.object,
+          properties: {},
+          required: [],
         },
         description: "Shared presets from other users",
       },

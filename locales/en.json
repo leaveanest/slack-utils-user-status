@@ -123,7 +123,8 @@
       "status_text_too_long": "Status text must be 100 characters or less",
       "invalid_emoji": "Invalid emoji format. Use :emoji: format",
       "preset_not_found": "Preset not found",
-      "unauthorized": "You don't have permission to perform this action"
+      "unauthorized": "You don't have permission to perform this action",
+      "admin_token_not_configured": "Admin user token is not configured. Please set SLACK_ADMIN_USER_TOKEN environment variable."
     },
     "team": {
       "title": "Team Status",

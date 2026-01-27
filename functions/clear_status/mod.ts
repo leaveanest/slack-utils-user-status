@@ -3,6 +3,7 @@ import type { SlackAPIClient } from "deno-slack-sdk/types.ts";
 import { t } from "../../lib/i18n/mod.ts";
 import { userIdSchema } from "../../lib/validation/schemas.ts";
 import type { UserStatus } from "../../lib/types/status.ts";
+import { clearStatusWithUserToken } from "../../lib/slack/user-token.ts";
 
 /**
  * ステータスクリアFunction定義
@@ -82,28 +83,20 @@ async function getCurrentStatus(
  * ユーザーのステータスをクリア
  *
  * ステータステキストと絵文字を空にし、有効期限も0にリセットします。
+ * Admin User Token を使用して users.profile.set API を呼び出します。
  *
- * @param client - Slack APIクライアント
  * @param userId - ユーザーID
  * @throws {Error} API呼び出しに失敗した場合
  *
  * @example
  * ```typescript
- * await clearUserStatus(client, "U12345678");
+ * await clearUserStatus("U12345678");
  * ```
  */
 export async function clearUserStatus(
-  client: SlackAPIClient,
   userId: string,
 ): Promise<void> {
-  const response = await client.users.profile.set({
-    user: userId,
-    profile: JSON.stringify({
-      status_text: "",
-      status_emoji: "",
-      status_expiration: 0,
-    }),
-  });
+  const response = await clearStatusWithUserToken(userId);
 
   if (!response.ok) {
     const errorCode = response.error ?? "unknown_error";
@@ -122,7 +115,7 @@ export default SlackFunction(
       const previousStatus = await getCurrentStatus(client, userId);
 
       // ステータスをクリア
-      await clearUserStatus(client, userId);
+      await clearUserStatus(userId);
 
       return {
         outputs: {

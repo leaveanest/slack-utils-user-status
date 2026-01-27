@@ -55,6 +55,7 @@ export const GetTeamStatusDefinition = DefineFunction({
             status_emoji: { type: Schema.types.string },
             status_expiration: { type: Schema.types.integer },
           },
+          required: [],
         },
         description: "List of team member statuses",
       },

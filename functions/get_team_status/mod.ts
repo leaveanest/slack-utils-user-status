@@ -5,6 +5,7 @@
 import { DefineFunction, Schema, SlackFunction } from "deno-slack-sdk/mod.ts";
 import type { SlackAPIClient } from "deno-slack-sdk/types.ts";
 import { t } from "../../lib/i18n/mod.ts";
+import { TeamMemberStatusType } from "../../lib/slack/types.ts";
 
 /**
  * チームメンバーのステータス情報
@@ -46,16 +47,7 @@ export const GetTeamStatusDefinition = DefineFunction({
       members: {
         type: Schema.types.array,
         items: {
-          type: Schema.types.object,
-          properties: {
-            user_id: { type: Schema.types.string },
-            display_name: { type: Schema.types.string },
-            real_name: { type: Schema.types.string },
-            status_text: { type: Schema.types.string },
-            status_emoji: { type: Schema.types.string },
-            status_expiration: { type: Schema.types.integer },
-          },
-          required: [],
+          type: TeamMemberStatusType,
         },
         description: "List of team member statuses",
       },

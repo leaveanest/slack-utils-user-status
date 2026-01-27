@@ -18,6 +18,7 @@ import { TeamStatusWorkflow } from "./workflows/team_status_workflow.ts";
 import { StatusPresetDatastore } from "./datastores/status_presets.ts";
 import { StatusScheduleDatastore } from "./datastores/status_schedules.ts";
 import { StatusHistoryDatastore } from "./datastores/status_history.ts";
+import { StatusPresetType, TeamMemberStatusType } from "./lib/slack/types.ts";
 
 // Load from environment variables with fallback defaults
 const APP_NAME = Deno.env.get("SLACK_APP_NAME") || "Slack Utils Template";
@@ -54,6 +55,7 @@ export default Manifest({
     StatusScheduleDatastore,
     StatusHistoryDatastore,
   ],
+  types: [TeamMemberStatusType, StatusPresetType],
   botScopes: [
     "commands",
     "chat:write",

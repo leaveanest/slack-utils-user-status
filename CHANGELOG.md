@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.2](https://github.com/leaveanest/slack-utils-user-status/compare/v1.5.1...v1.5.2) (2026-01-27)
+
+
+### Bug Fixes
+
+* マニフェストバリデーションエラー修正（DefineType使用） ([0692da6](https://github.com/leaveanest/slack-utils-user-status/commit/0692da6ebb8b35c9f40fe3bdbea474c048a446ee))
+
 ## [1.5.1](https://github.com/leaveanest/slack-utils-user-status/compare/v1.5.0...v1.5.1) (2026-01-27)
 
 

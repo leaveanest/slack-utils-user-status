@@ -12,6 +12,7 @@ import {
   userIdSchema,
 } from "../../lib/validation/schemas.ts";
 import type { StatusPreset } from "../../lib/types/status.ts";
+import { setStatusWithUserToken } from "../../lib/slack/user-token.ts";
 
 /**
  * モーダルコールバックID
@@ -384,24 +385,16 @@ async function getNextSortOrder(
 }
 
 /**
- * Profile set 結果の型
- */
-interface ProfileSetResult {
-  ok: boolean;
-  error?: string;
-}
-
-/**
  * ユーザーのステータスを設定
  *
- * @param client - Slack APIクライアント
+ * Admin User Token を使用して users.profile.set API を呼び出します。
+ *
  * @param userId - ユーザーID
  * @param statusText - ステータステキスト
  * @param statusEmoji - ステータス絵文字
  * @param expirationMinutes - 有効期限（分）
  */
 async function setUserStatus(
-  client: SlackAPIClient,
   userId: string,
   statusText: string,
   statusEmoji: string,
@@ -409,14 +402,12 @@ async function setUserStatus(
 ): Promise<void> {
   const statusExpiration = calculateExpiration(expirationMinutes);
 
-  const response = await client.users.profile.set({
-    user: userId,
-    profile: JSON.stringify({
-      status_text: statusText,
-      status_emoji: statusEmoji,
-      status_expiration: statusExpiration,
-    }),
-  }) as ProfileSetResult;
+  const response = await setStatusWithUserToken(
+    userId,
+    statusText,
+    statusEmoji,
+    statusExpiration,
+  );
 
   if (!response.ok) {
     const errorCode = response.error ?? "unknown_error";
@@ -562,7 +553,6 @@ export default SlackFunction(
 
         // ステータスを設定
         await setUserStatus(
-          client,
           userId,
           validatedStatus.status_text,
           validatedStatus.status_emoji,

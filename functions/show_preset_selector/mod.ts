@@ -7,6 +7,10 @@ import type { SlackAPIClient } from "deno-slack-sdk/types.ts";
 import { t } from "../../lib/i18n/mod.ts";
 import { userIdSchema } from "../../lib/validation/schemas.ts";
 import type { StatusPreset } from "../../lib/types/status.ts";
+import {
+  clearStatusWithUserToken,
+  setStatusWithUserToken,
+} from "../../lib/slack/user-token.ts";
 
 /**
  * モーダルコールバックID
@@ -64,14 +68,6 @@ export const ShowPresetSelectorDefinition = DefineFunction({
 interface DatastoreQueryResult {
   ok: boolean;
   items?: StatusPreset[];
-  error?: string;
-}
-
-/**
- * Profile set 結果の型
- */
-interface ProfileSetResult {
-  ok: boolean;
   error?: string;
 }
 
@@ -344,14 +340,14 @@ export function calculateExpiration(minutes: number | null): number {
 /**
  * ユーザーのステータスを設定
  *
- * @param client - Slack APIクライアント
+ * Admin User Token を使用して users.profile.set API を呼び出します。
+ *
  * @param userId - ユーザーID
  * @param statusText - ステータステキスト
  * @param statusEmoji - ステータス絵文字
  * @param durationMinutes - 有効期限（分）
  */
 async function setUserStatus(
-  client: SlackAPIClient,
   userId: string,
   statusText: string,
   statusEmoji: string,
@@ -359,14 +355,12 @@ async function setUserStatus(
 ): Promise<void> {
   const statusExpiration = calculateExpiration(durationMinutes);
 
-  const response = await client.users.profile.set({
-    user: userId,
-    profile: JSON.stringify({
-      status_text: statusText,
-      status_emoji: statusEmoji,
-      status_expiration: statusExpiration,
-    }),
-  }) as ProfileSetResult;
+  const response = await setStatusWithUserToken(
+    userId,
+    statusText,
+    statusEmoji,
+    statusExpiration,
+  );
 
   if (!response.ok) {
     const errorCode = response.error ?? "unknown_error";
@@ -377,14 +371,19 @@ async function setUserStatus(
 /**
  * ステータスをクリア
  *
- * @param client - Slack APIクライアント
+ * Admin User Token を使用してステータスをクリアします。
+ *
  * @param userId - ユーザーID
  */
 async function clearUserStatus(
-  client: SlackAPIClient,
   userId: string,
 ): Promise<void> {
-  await setUserStatus(client, userId, "", "", null);
+  const response = await clearStatusWithUserToken(userId);
+
+  if (!response.ok) {
+    const errorCode = response.error ?? "unknown_error";
+    throw new Error(t("status.errors.api_call_failed", { error: errorCode }));
+  }
 }
 
 /**
@@ -538,7 +537,6 @@ export default SlackFunction(
 
         // ステータスを設定
         await setUserStatus(
-          client,
           userId,
           preset.status_text,
           preset.status_emoji,
@@ -582,7 +580,7 @@ export default SlackFunction(
         const userId = userIdSchema.parse(metadata.user_id);
 
         // ステータスをクリア
-        await clearUserStatus(client, userId);
+        await clearUserStatus(userId);
 
         // 完了メッセージを表示
         const completionView = buildCompletionView(

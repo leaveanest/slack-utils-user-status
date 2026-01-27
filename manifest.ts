@@ -62,6 +62,8 @@ export default Manifest({
     "users:read",
     "users.profile:read",
     "emoji:read",
+    "datastore:read",
+    "datastore:write",
   ],
   // Note: User scopes (users.profile:write, users.profile:read) for status updates
   // will be handled via external OAuth provider or on-behalf-of user authentication

@@ -1,5 +1,6 @@
 import { assertEquals } from "std/testing/asserts.ts";
 import type { SlackAPIClient } from "deno-slack-sdk/types.ts";
+import { afterEach, beforeEach, describe, it } from "std/testing/bdd.ts";
 import { calculateExpiration, getCurrentStatus, setUserStatus } from "./mod.ts";
 
 // Mock response types
@@ -10,11 +11,6 @@ interface MockProfileGetResponse {
     status_emoji?: string;
     status_expiration?: number;
   };
-  error?: string;
-}
-
-interface MockProfileSetResponse {
-  ok: boolean;
   error?: string;
 }
 
@@ -129,93 +125,89 @@ Deno.test({
   },
 });
 
-Deno.test({
-  name: "setUserStatus: 正常にステータスを設定できる",
-  sanitizeResources: false,
-  sanitizeOps: false,
-  fn: async () => {
-    let capturedProfile: string | undefined;
+describe("setUserStatus", () => {
+  const originalToken = Deno.env.get("SLACK_ADMIN_USER_TOKEN");
+  let originalFetch: typeof globalThis.fetch;
 
-    const mockClient = {
-      users: {
-        profile: {
-          set: (
-            args: { user: string; profile: string },
-          ): Promise<MockProfileSetResponse> => {
-            capturedProfile = args.profile;
-            return Promise.resolve({ ok: true });
-          },
-        },
-      },
-    } as unknown as SlackAPIClient;
+  beforeEach(() => {
+    originalFetch = globalThis.fetch;
+    Deno.env.set("SLACK_ADMIN_USER_TOKEN", "xoxp-test-token");
+  });
 
-    await setUserStatus(
-      mockClient,
-      "U12345678",
-      "In a meeting",
-      ":calendar:",
-      60,
-    );
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+    if (originalToken) {
+      Deno.env.set("SLACK_ADMIN_USER_TOKEN", originalToken);
+    } else {
+      Deno.env.delete("SLACK_ADMIN_USER_TOKEN");
+    }
+  });
 
-    // プロファイルが正しく設定されたか確認
-    assertEquals(capturedProfile !== undefined, true);
-    const parsed = JSON.parse(capturedProfile!);
-    assertEquals(parsed.status_text, "In a meeting");
-    assertEquals(parsed.status_emoji, ":calendar:");
-    assertEquals(parsed.status_expiration > 0, true);
-  },
-});
+  it("正常にステータスを設定できる", async () => {
+    let capturedBody: string | undefined;
 
-Deno.test({
-  name: "setUserStatus: 有効期限0の場合はstatus_expirationも0",
-  sanitizeResources: false,
-  sanitizeOps: false,
-  fn: async () => {
-    let capturedProfile: string | undefined;
+    globalThis.fetch = (
+      _input: RequestInfo | URL,
+      init?: RequestInit,
+    ) => {
+      capturedBody = init?.body as string;
+      return Promise.resolve(
+        new Response(JSON.stringify({ ok: true }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }),
+      );
+    };
 
-    const mockClient = {
-      users: {
-        profile: {
-          set: (
-            args: { user: string; profile: string },
-          ): Promise<MockProfileSetResponse> => {
-            capturedProfile = args.profile;
-            return Promise.resolve({ ok: true });
-          },
-        },
-      },
-    } as unknown as SlackAPIClient;
+    await setUserStatus("U12345678", "In a meeting", ":calendar:", 60);
 
-    await setUserStatus(mockClient, "U12345678", "Away", ":away:", 0);
+    // リクエストボディが正しく設定されたか確認
+    assertEquals(capturedBody !== undefined, true);
+    const parsed = JSON.parse(capturedBody!);
+    assertEquals(parsed.user, "U12345678");
+    assertEquals(parsed.profile.status_text, "In a meeting");
+    assertEquals(parsed.profile.status_emoji, ":calendar:");
+    assertEquals(parsed.profile.status_expiration > 0, true);
+  });
 
-    const parsed = JSON.parse(capturedProfile!);
-    assertEquals(parsed.status_expiration, 0);
-  },
-});
+  it("有効期限0の場合はstatus_expirationも0", async () => {
+    let capturedBody: string | undefined;
 
-Deno.test({
-  name: "setUserStatus: APIエラー時は例外を投げる",
-  sanitizeResources: false,
-  sanitizeOps: false,
-  fn: async () => {
-    const mockClient = {
-      users: {
-        profile: {
-          set: (): Promise<MockProfileSetResponse> =>
-            Promise.resolve({
-              ok: false,
-              error: "not_allowed",
-            }),
-        },
-      },
-    } as unknown as SlackAPIClient;
+    globalThis.fetch = (
+      _input: RequestInfo | URL,
+      init?: RequestInit,
+    ) => {
+      capturedBody = init?.body as string;
+      return Promise.resolve(
+        new Response(JSON.stringify({ ok: true }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }),
+      );
+    };
+
+    await setUserStatus("U12345678", "Away", ":away:", 0);
+
+    const parsed = JSON.parse(capturedBody!);
+    assertEquals(parsed.profile.status_expiration, 0);
+  });
+
+  it("APIエラー時は例外を投げる", async () => {
+    globalThis.fetch = () => {
+      return Promise.resolve(
+        new Response(JSON.stringify({ ok: false, error: "not_allowed" }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }),
+      );
+    };
 
     try {
-      await setUserStatus(mockClient, "U12345678", "Test", ":test:", 0);
+      await setUserStatus("U12345678", "Test", ":test:", 0);
       assertEquals(true, false, "Should have thrown an error");
     } catch (error) {
       assertEquals(error instanceof Error, true);
       assertEquals((error as Error).message.includes("not_allowed"), true);
     }
-  },
+  });
 });

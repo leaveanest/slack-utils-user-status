@@ -123,7 +123,8 @@
       "status_text_too_long": "ステータステキストは100文字以下である必要があります",
       "invalid_emoji": "無効な絵文字形式です。:emoji: 形式で入力してください",
       "preset_not_found": "プリセットが見つかりません",
-      "unauthorized": "この操作を実行する権限がありません"
+      "unauthorized": "この操作を実行する権限がありません",
+      "admin_token_not_configured": "Admin User Tokenが設定されていません。環境変数 SLACK_ADMIN_USER_TOKEN を設定してください。"
     },
     "team": {
       "title": "チームステータス",

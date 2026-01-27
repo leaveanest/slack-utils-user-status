@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.1](https://github.com/leaveanest/slack-utils-user-status/compare/v1.5.0...v1.5.1) (2026-01-27)
+
+
+### Bug Fixes
+
+* マニフェストバリデーションエラー修正とユーザートークン対応 ([539be33](https://github.com/leaveanest/slack-utils-user-status/commit/539be3380bde2565d2cad21861e048b2ecf625f1))
+
 ## [1.5.0](https://github.com/leaveanest/slack-utils-user-status/compare/v1.4.0...v1.5.0) (2026-01-23)
 
 

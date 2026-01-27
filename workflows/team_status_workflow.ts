@@ -13,17 +13,17 @@ import { ShowTeamStatusDefinition } from "../functions/show_team_status/mod.ts";
  */
 const TeamStatusWorkflow = DefineWorkflow({
   callback_id: "team_status_workflow",
-  title: "Team Status",
-  description: "View team members status",
+  title: "チームステータス",
+  description: "チームメンバーのステータスを表示します",
   input_parameters: {
     properties: {
       interactivity: {
         type: Schema.slack.types.interactivity,
-        description: "Interactivity context from the trigger",
+        description: "トリガーからのインタラクティビティコンテキスト",
       },
       user_id: {
         type: Schema.slack.types.user_id,
-        description: "User ID who triggered the workflow",
+        description: "ワークフローを起動したユーザーのID",
       },
     },
     required: ["interactivity", "user_id"],

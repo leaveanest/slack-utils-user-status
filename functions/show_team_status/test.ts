@@ -134,16 +134,16 @@ Deno.test({
     // ヘッダー + context + divider + statusあり + divider + context + statusなし
     assertEquals(blocks.length >= 5, true);
 
-    // "Status Set" contextが "No Status" contextより前にある
+    // "ステータスあり" contextが "ステータスなし" contextより前にある
     const statusSetIndex = blocks.findIndex(
       (b) =>
         b.type === "context" &&
-        JSON.stringify(b).includes("Status Set"),
+        JSON.stringify(b).includes("ステータスあり"),
     );
     const noStatusIndex = blocks.findIndex(
       (b) =>
         b.type === "context" &&
-        JSON.stringify(b).includes("No Status"),
+        JSON.stringify(b).includes("ステータスなし"),
     );
 
     assertEquals(statusSetIndex < noStatusIndex, true);

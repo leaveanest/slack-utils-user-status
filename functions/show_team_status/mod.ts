@@ -21,22 +21,22 @@ export const TEAM_STATUS_MODAL_CALLBACK_ID = "team_status_modal";
  */
 export const ShowTeamStatusDefinition = DefineFunction({
   callback_id: "show_team_status",
-  title: "Show Team Status",
-  description: "Display team member statuses in a modal",
+  title: "チームステータス表示",
+  description: "チームメンバーのステータス一覧をモーダルで表示します",
   source_file: "functions/show_team_status/mod.ts",
   input_parameters: {
     properties: {
       interactivity: {
         type: Schema.slack.types.interactivity,
-        description: "Interactivity context",
+        description: "インタラクティビティコンテキスト",
       },
       user_id: {
         type: Schema.slack.types.user_id,
-        description: "User ID who triggered the modal",
+        description: "モーダルを起動したユーザーのID",
       },
       limit: {
         type: Schema.types.integer,
-        description: "Maximum number of members to display (default: 50)",
+        description: "表示するメンバーの最大数（デフォルト: 50）",
       },
     },
     required: ["interactivity", "user_id"],
@@ -45,11 +45,11 @@ export const ShowTeamStatusDefinition = DefineFunction({
     properties: {
       member_count: {
         type: Schema.types.integer,
-        description: "Number of members displayed",
+        description: "表示されたメンバーの数",
       },
       error: {
         type: Schema.types.string,
-        description: "Error message if failed",
+        description: "失敗時のエラーメッセージ",
       },
     },
     required: [],
@@ -141,7 +141,9 @@ export function buildTeamStatusBlocks(
       elements: [
         {
           type: "mrkdwn",
-          text: `:speech_balloon: *Status Set (${membersWithStatus.length})*`,
+          text: t("status.team.status_set", {
+            count: membersWithStatus.length,
+          }),
         },
       ],
     });
@@ -163,7 +165,9 @@ export function buildTeamStatusBlocks(
       elements: [
         {
           type: "mrkdwn",
-          text: `:grey_question: *No Status (${membersWithoutStatus.length})*`,
+          text: t("status.team.no_status_count", {
+            count: membersWithoutStatus.length,
+          }),
         },
       ],
     });
@@ -175,7 +179,7 @@ export function buildTeamStatusBlocks(
 
     let text = names;
     if (remaining > 0) {
-      text += ` +${remaining} more`;
+      text += ` ${t("status.team.and_more", { count: remaining })}`;
     }
 
     blocks.push({

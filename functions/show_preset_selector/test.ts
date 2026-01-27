@@ -114,7 +114,7 @@ Deno.test({
     const block = buildPresetBlock(preset);
 
     const text = block.text as Record<string, unknown>;
-    assertEquals((text.text as string).includes("(no text)"), true);
+    assertEquals((text.text as string).includes("（テキストなし）"), true);
   },
 });
 

@@ -13,17 +13,17 @@ import { ShowStatusFormDefinition } from "../functions/show_status_form/mod.ts";
  */
 const SetStatusWorkflow = DefineWorkflow({
   callback_id: "set_status_workflow",
-  title: "Set Status",
-  description: "Set your Slack status",
+  title: "ステータス設定",
+  description: "Slackのステータスを設定します",
   input_parameters: {
     properties: {
       interactivity: {
         type: Schema.slack.types.interactivity,
-        description: "Interactivity context from the trigger",
+        description: "トリガーからのインタラクティビティコンテキスト",
       },
       user_id: {
         type: Schema.slack.types.user_id,
-        description: "User ID who triggered the workflow",
+        description: "ワークフローを起動したユーザーのID",
       },
     },
     required: ["interactivity", "user_id"],

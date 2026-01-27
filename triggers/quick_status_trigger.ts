@@ -14,8 +14,8 @@ import { QuickStatusWorkflow } from "../workflows/quick_status_workflow.ts";
  */
 const QuickStatusTrigger: Trigger<typeof QuickStatusWorkflow.definition> = {
   type: TriggerTypes.Shortcut,
-  name: "Quick Status",
-  description: "Quickly set status from presets",
+  name: "クイックステータス",
+  description: "プリセットから素早くステータスを設定します",
   workflow: `#/workflows/${QuickStatusWorkflow.definition.callback_id}`,
   inputs: {
     interactivity: {

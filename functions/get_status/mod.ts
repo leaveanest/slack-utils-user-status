@@ -9,14 +9,14 @@ import type { UserStatus } from "../../lib/types/status.ts";
  */
 export const GetStatusDefinition = DefineFunction({
   callback_id: "get_status",
-  title: "Get User Status",
-  description: "Get the current status of a user",
+  title: "ステータス取得",
+  description: "ユーザーの現在のステータスを取得します",
   source_file: "functions/get_status/mod.ts",
   input_parameters: {
     properties: {
       user_id: {
         type: Schema.slack.types.user_id,
-        description: "Target user ID",
+        description: "対象ユーザーID",
       },
     },
     required: ["user_id"],
@@ -25,19 +25,19 @@ export const GetStatusDefinition = DefineFunction({
     properties: {
       status_text: {
         type: Schema.types.string,
-        description: "Current status text",
+        description: "現在のステータステキスト",
       },
       status_emoji: {
         type: Schema.types.string,
-        description: "Current status emoji",
+        description: "現在のステータス絵文字",
       },
       status_expiration: {
         type: Schema.types.integer,
-        description: "Status expiration timestamp (0 = no expiration)",
+        description: "ステータス有効期限タイムスタンプ（0 = 無期限）",
       },
       error: {
         type: Schema.types.string,
-        description: "Error message if failed",
+        description: "失敗時のエラーメッセージ",
       },
     },
     required: [],

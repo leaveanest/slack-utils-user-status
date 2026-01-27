@@ -15,18 +15,18 @@ import { setStatusWithUserToken } from "../../lib/slack/user-token.ts";
  */
 export const ApplyPresetDefinition = DefineFunction({
   callback_id: "apply_preset",
-  title: "Apply Preset",
-  description: "Apply a saved preset to user status",
+  title: "プリセット適用",
+  description: "保存済みプリセットをユーザーステータスに適用します",
   source_file: "functions/apply_preset/mod.ts",
   input_parameters: {
     properties: {
       user_id: {
         type: Schema.slack.types.user_id,
-        description: "Target user ID",
+        description: "対象ユーザーID",
       },
       preset_id: {
         type: Schema.types.string,
-        description: "Preset ID to apply",
+        description: "適用するプリセットID",
       },
     },
     required: ["user_id", "preset_id"],
@@ -35,19 +35,19 @@ export const ApplyPresetDefinition = DefineFunction({
     properties: {
       success: {
         type: Schema.types.boolean,
-        description: "Whether the preset was applied successfully",
+        description: "プリセットの適用に成功したかどうか",
       },
       status_text: {
         type: Schema.types.string,
-        description: "Applied status text",
+        description: "適用されたステータステキスト",
       },
       status_emoji: {
         type: Schema.types.string,
-        description: "Applied status emoji",
+        description: "適用されたステータス絵文字",
       },
       error: {
         type: Schema.types.string,
-        description: "Error message if failed",
+        description: "失敗時のエラーメッセージ",
       },
     },
     required: ["success"],

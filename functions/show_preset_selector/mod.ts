@@ -35,18 +35,18 @@ export interface PrivateMetadata {
  */
 export const ShowPresetSelectorDefinition = DefineFunction({
   callback_id: "show_preset_selector",
-  title: "Show Preset Selector",
-  description: "Display a modal to select and apply a preset",
+  title: "プリセット選択",
+  description: "プリセットを選択・適用するモーダルを表示します",
   source_file: "functions/show_preset_selector/mod.ts",
   input_parameters: {
     properties: {
       interactivity: {
         type: Schema.slack.types.interactivity,
-        description: "Interactivity context",
+        description: "インタラクティビティコンテキスト",
       },
       user_id: {
         type: Schema.slack.types.user_id,
-        description: "User ID",
+        description: "ユーザーID",
       },
     },
     required: ["interactivity", "user_id"],
@@ -55,7 +55,7 @@ export const ShowPresetSelectorDefinition = DefineFunction({
     properties: {
       selected_preset_id: {
         type: Schema.types.string,
-        description: "Selected preset ID",
+        description: "選択されたプリセットID",
       },
     },
     required: [],
@@ -159,7 +159,7 @@ export function buildPresetBlock(
   preset: StatusPreset,
 ): Record<string, unknown> {
   const emoji = preset.status_emoji || ":grey_question:";
-  const text = preset.status_text || "(no text)";
+  const text = preset.status_text || t("status.selector.no_text");
 
   return {
     type: "section",

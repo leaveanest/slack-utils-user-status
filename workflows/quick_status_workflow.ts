@@ -13,17 +13,17 @@ import { ShowPresetSelectorDefinition } from "../functions/show_preset_selector/
  */
 const QuickStatusWorkflow = DefineWorkflow({
   callback_id: "quick_status_workflow",
-  title: "Quick Status",
-  description: "Quickly set status from presets",
+  title: "クイックステータス",
+  description: "プリセットから素早くステータスを設定します",
   input_parameters: {
     properties: {
       interactivity: {
         type: Schema.slack.types.interactivity,
-        description: "Interactivity context from the trigger",
+        description: "トリガーからのインタラクティビティコンテキスト",
       },
       user_id: {
         type: Schema.slack.types.user_id,
-        description: "User ID who triggered the workflow",
+        description: "ワークフローを起動したユーザーのID",
       },
     },
     required: ["interactivity", "user_id"],

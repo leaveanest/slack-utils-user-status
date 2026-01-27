@@ -282,18 +282,18 @@ export function buildStatusFormView(userId: string): Record<string, unknown> {
  */
 export const ShowStatusFormDefinition = DefineFunction({
   callback_id: "show_status_form",
-  title: "Show Status Form",
-  description: "Display a modal to set user status",
+  title: "ステータス設定フォーム",
+  description: "ステータスを設定するモーダルを表示します",
   source_file: "functions/show_status_form/mod.ts",
   input_parameters: {
     properties: {
       interactivity: {
         type: Schema.slack.types.interactivity,
-        description: "Interactivity context",
+        description: "インタラクティビティコンテキスト",
       },
       user_id: {
         type: Schema.slack.types.user_id,
-        description: "User ID",
+        description: "ユーザーID",
       },
     },
     required: ["interactivity", "user_id"],
@@ -302,23 +302,23 @@ export const ShowStatusFormDefinition = DefineFunction({
     properties: {
       status_text: {
         type: Schema.types.string,
-        description: "Set status text",
+        description: "設定されたステータステキスト",
       },
       status_emoji: {
         type: Schema.types.string,
-        description: "Set status emoji",
+        description: "設定されたステータス絵文字",
       },
       expiration_minutes: {
         type: Schema.types.integer,
-        description: "Expiration in minutes",
+        description: "有効期限（分）",
       },
       preset_name: {
         type: Schema.types.string,
-        description: "Created preset name (if saved)",
+        description: "作成されたプリセット名（保存した場合）",
       },
       save_as_preset: {
         type: Schema.types.boolean,
-        description: "Whether preset was saved",
+        description: "プリセットとして保存したかどうか",
       },
     },
     required: [],

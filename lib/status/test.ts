@@ -2,6 +2,7 @@ import { assertEquals } from "std/testing/asserts.ts";
 import type { SlackAPIClient } from "deno-slack-sdk/types.ts";
 import { recordStatusHistory, recordStatusHistorySilent } from "./history.ts";
 import type { StatusHistory } from "../types/status.ts";
+import { initI18n } from "../i18n/mod.ts";
 
 // Mock response type
 interface MockDatastorePutResponse {
@@ -88,6 +89,9 @@ Deno.test({
   sanitizeResources: false,
   sanitizeOps: false,
   fn: async () => {
+    // i18nの初期化を待つ（レースコンディション対策）
+    await initI18n();
+
     const mockClient = {
       apps: {
         datastore: {

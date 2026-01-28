@@ -9,6 +9,10 @@ import {
   TEAM_STATUS_MODAL_CALLBACK_ID,
 } from "./mod.ts";
 import type { TeamMemberStatus } from "../get_team_status/mod.ts";
+import { initI18n } from "../../lib/i18n/mod.ts";
+
+// i18nの初期化を待つ（レースコンディション対策）
+await initI18n();
 
 // テスト用のモックメンバー
 function createMockMember(

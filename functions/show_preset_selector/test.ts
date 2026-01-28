@@ -1,5 +1,6 @@
 import { assertEquals } from "std/testing/asserts.ts";
 import type { SlackAPIClient } from "deno-slack-sdk/types.ts";
+import { initI18n } from "../../lib/i18n/mod.ts";
 import {
   APPLY_PRESET_ACTION_PREFIX,
   buildLoadingView,
@@ -14,6 +15,9 @@ import {
 } from "./mod.ts";
 import type { PrivateMetadata } from "./mod.ts";
 import type { StatusPreset } from "../../lib/types/status.ts";
+
+// i18nの初期化を待つ（レースコンディション対策）
+await initI18n();
 
 // テスト用のモックプリセット
 function createMockPreset(overrides: Partial<StatusPreset> = {}): StatusPreset {

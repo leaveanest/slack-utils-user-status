@@ -9,10 +9,12 @@ import {
   TEAM_STATUS_MODAL_CALLBACK_ID,
 } from "./mod.ts";
 import type { TeamMemberStatus } from "../get_team_status/mod.ts";
-import { initI18n } from "../../lib/i18n/mod.ts";
+import { initI18n, loadLocale, setLocale } from "../../lib/i18n/mod.ts";
 
-// i18nの初期化を待つ（レースコンディション対策）
+// i18nの初期化（日本語ロケールを明示的に設定、CI環境対策）
 await initI18n();
+await loadLocale("ja");
+setLocale("ja");
 
 // テスト用のモックメンバー
 function createMockMember(

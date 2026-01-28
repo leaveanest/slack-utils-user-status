@@ -1,6 +1,6 @@
 import { assertEquals } from "std/testing/asserts.ts";
 import type { SlackAPIClient } from "deno-slack-sdk/types.ts";
-import { initI18n } from "../../lib/i18n/mod.ts";
+import { initI18n, loadLocale, setLocale } from "../../lib/i18n/mod.ts";
 import {
   APPLY_PRESET_ACTION_PREFIX,
   buildLoadingView,
@@ -16,8 +16,10 @@ import {
 import type { PrivateMetadata } from "./mod.ts";
 import type { StatusPreset } from "../../lib/types/status.ts";
 
-// i18nの初期化を待つ（レースコンディション対策）
+// i18nの初期化（日本語ロケールを明示的に設定、CI環境対策）
 await initI18n();
+await loadLocale("ja");
+setLocale("ja");
 
 // テスト用のモックプリセット
 function createMockPreset(overrides: Partial<StatusPreset> = {}): StatusPreset {

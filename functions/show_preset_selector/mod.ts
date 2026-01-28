@@ -342,12 +342,14 @@ export function calculateExpiration(minutes: number | null): number {
  *
  * Admin User Token を使用して users.profile.set API を呼び出します。
  *
+ * @param adminToken - Admin User Token
  * @param userId - ユーザーID
  * @param statusText - ステータステキスト
  * @param statusEmoji - ステータス絵文字
  * @param durationMinutes - 有効期限（分）
  */
 async function setUserStatus(
+  adminToken: string,
   userId: string,
   statusText: string,
   statusEmoji: string,
@@ -356,6 +358,7 @@ async function setUserStatus(
   const statusExpiration = calculateExpiration(durationMinutes);
 
   const response = await setStatusWithUserToken(
+    adminToken,
     userId,
     statusText,
     statusEmoji,
@@ -373,12 +376,14 @@ async function setUserStatus(
  *
  * Admin User Token を使用してステータスをクリアします。
  *
+ * @param adminToken - Admin User Token
  * @param userId - ユーザーID
  */
 async function clearUserStatus(
+  adminToken: string,
   userId: string,
 ): Promise<void> {
-  const response = await clearStatusWithUserToken(userId);
+  const response = await clearStatusWithUserToken(adminToken, userId);
 
   if (!response.ok) {
     const errorCode = response.error ?? "unknown_error";
@@ -514,8 +519,14 @@ export default SlackFunction(
 )
   .addBlockActionsHandler(
     new RegExp(`^${APPLY_PRESET_ACTION_PREFIX}`),
-    async ({ action, body, client }) => {
+    async ({ action, body, client, env }) => {
       try {
+        // Admin User Token を取得
+        const adminToken = env.SLACK_ADMIN_USER_TOKEN;
+        if (!adminToken) {
+          throw new Error(t("status.errors.admin_token_not_configured"));
+        }
+
         const blockBody = body as BlockActionBody;
         const metadata: PrivateMetadata = JSON.parse(
           blockBody.view?.private_metadata || "{}",
@@ -537,6 +548,7 @@ export default SlackFunction(
 
         // ステータスを設定
         await setUserStatus(
+          adminToken,
           userId,
           preset.status_text,
           preset.status_emoji,
@@ -571,8 +583,14 @@ export default SlackFunction(
   )
   .addBlockActionsHandler(
     [CLEAR_STATUS_ACTION_ID],
-    async ({ body, client }) => {
+    async ({ body, client, env }) => {
       try {
+        // Admin User Token を取得
+        const adminToken = env.SLACK_ADMIN_USER_TOKEN;
+        if (!adminToken) {
+          throw new Error(t("status.errors.admin_token_not_configured"));
+        }
+
         const blockBody = body as BlockActionBody;
         const metadata: PrivateMetadata = JSON.parse(
           blockBody.view?.private_metadata || "{}",
@@ -580,7 +598,7 @@ export default SlackFunction(
         const userId = userIdSchema.parse(metadata.user_id);
 
         // ステータスをクリア
-        await clearUserStatus(userId);
+        await clearUserStatus(adminToken, userId);
 
         // 完了メッセージを表示
         const completionView = buildCompletionView(

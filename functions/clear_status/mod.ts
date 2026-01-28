@@ -85,18 +85,20 @@ async function getCurrentStatus(
  * ステータステキストと絵文字を空にし、有効期限も0にリセットします。
  * Admin User Token を使用して users.profile.set API を呼び出します。
  *
+ * @param adminToken - Admin User Token
  * @param userId - ユーザーID
  * @throws {Error} API呼び出しに失敗した場合
  *
  * @example
  * ```typescript
- * await clearUserStatus("U12345678");
+ * await clearUserStatus(adminToken, "U12345678");
  * ```
  */
 export async function clearUserStatus(
+  adminToken: string,
   userId: string,
 ): Promise<void> {
-  const response = await clearStatusWithUserToken(userId);
+  const response = await clearStatusWithUserToken(adminToken, userId);
 
   if (!response.ok) {
     const errorCode = response.error ?? "unknown_error";
@@ -106,8 +108,14 @@ export async function clearUserStatus(
 
 export default SlackFunction(
   ClearStatusDefinition,
-  async ({ inputs, client }) => {
+  async ({ inputs, client, env }) => {
     try {
+      // Admin User Token を取得
+      const adminToken = env.SLACK_ADMIN_USER_TOKEN;
+      if (!adminToken) {
+        throw new Error(t("status.errors.admin_token_not_configured"));
+      }
+
       // ユーザーIDのバリデーション
       const userId = userIdSchema.parse(inputs.user_id);
 
@@ -115,7 +123,7 @@ export default SlackFunction(
       const previousStatus = await getCurrentStatus(client, userId);
 
       // ステータスをクリア
-      await clearUserStatus(userId);
+      await clearUserStatus(adminToken, userId);
 
       return {
         outputs: {

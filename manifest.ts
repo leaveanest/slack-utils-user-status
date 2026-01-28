@@ -28,6 +28,7 @@ const APP_DESCRIPTION = Deno.env.get("SLACK_APP_DESCRIPTION") ||
 export default Manifest({
   name: APP_NAME,
   description: APP_DESCRIPTION,
+  displayName: "status-manager",
   icon: "assets/icon.png",
   workflows: [
     ExampleWorkflow,

@@ -2,22 +2,17 @@ import { assertEquals } from "std/testing/asserts.ts";
 import { afterEach, beforeEach, describe, it } from "std/testing/bdd.ts";
 import { clearUserStatus } from "./mod.ts";
 
+const TEST_ADMIN_TOKEN = "xoxp-test-token";
+
 describe("clearUserStatus", () => {
-  const originalToken = Deno.env.get("SLACK_ADMIN_USER_TOKEN");
   let originalFetch: typeof globalThis.fetch;
 
   beforeEach(() => {
     originalFetch = globalThis.fetch;
-    Deno.env.set("SLACK_ADMIN_USER_TOKEN", "xoxp-test-token");
   });
 
   afterEach(() => {
     globalThis.fetch = originalFetch;
-    if (originalToken) {
-      Deno.env.set("SLACK_ADMIN_USER_TOKEN", originalToken);
-    } else {
-      Deno.env.delete("SLACK_ADMIN_USER_TOKEN");
-    }
   });
 
   it("正常にステータスをクリアできる", async () => {
@@ -36,7 +31,7 @@ describe("clearUserStatus", () => {
       );
     };
 
-    await clearUserStatus("U12345678");
+    await clearUserStatus(TEST_ADMIN_TOKEN, "U12345678");
 
     // リクエストボディが正しくクリアされたか確認
     assertEquals(capturedBody !== undefined, true);
@@ -58,7 +53,7 @@ describe("clearUserStatus", () => {
     };
 
     try {
-      await clearUserStatus("U12345678");
+      await clearUserStatus(TEST_ADMIN_TOKEN, "U12345678");
       assertEquals(true, false, "Should have thrown an error");
     } catch (error) {
       assertEquals(error instanceof Error, true);

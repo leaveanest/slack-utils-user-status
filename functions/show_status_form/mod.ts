@@ -183,6 +183,7 @@ export function buildStatusFormView(userId: string): Record<string, unknown> {
       type: "plain_text",
       text: t("status.form.cancel"),
     },
+    notify_on_close: true,
     blocks: [
       {
         type: "input",
@@ -524,7 +525,7 @@ export default SlackFunction(
 )
   .addViewSubmissionHandler(
     [STATUS_FORM_MODAL_CALLBACK_ID],
-    async ({ view, client, env }) => {
+    async ({ view, body, client, env }) => {
       try {
         // Admin User Token を取得
         const adminToken = env.SLACK_ADMIN_USER_TOKEN;
@@ -605,15 +606,29 @@ export default SlackFunction(
           savedPresetName = validatedPreset.name;
         }
 
-        return {
+        // 関数を完了させる（outputs付き）
+        // addViewSubmissionHandler の return では outputs を渡せないため、
+        // client.functions.completeSuccess() を使用する
+        const completionResult = await client.functions.completeSuccess({
+          function_execution_id: body.function_data.execution_id,
           outputs: {
             status_text: validatedStatus.status_text,
             status_emoji: validatedStatus.status_emoji,
             expiration_minutes: validatedStatus.expiration_minutes,
-            preset_name: savedPresetName,
+            preset_name: savedPresetName ?? "",
             save_as_preset: shouldSavePreset && !!savedPresetName,
           },
-        };
+        });
+
+        if (!completionResult.ok) {
+          console.error(
+            "show_status_form completeSuccess error:",
+            completionResult.error,
+          );
+        }
+
+        // 何も返さない = モーダルを閉じる（デフォルト動作）
+        return;
       } catch (error) {
         if (error instanceof z.ZodError) {
           // Zodバリデーションエラーの場合はフィールドごとにエラーをマッピング
@@ -659,11 +674,11 @@ export default SlackFunction(
   )
   .addViewClosedHandler(
     [STATUS_FORM_MODAL_CALLBACK_ID],
-    () => {
-      // モーダルが閉じられた場合は何もせず完了
-      return {
+    async ({ body, client }) => {
+      // モーダルが閉じられた場合は関数を完了させる
+      await client.functions.completeSuccess({
+        function_execution_id: body.function_data.execution_id,
         outputs: {},
-        completed: true,
-      };
+      });
     },
   );

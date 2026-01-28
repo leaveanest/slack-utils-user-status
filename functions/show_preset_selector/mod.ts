@@ -283,6 +283,7 @@ export function buildLoadingView(userId: string): Record<string, unknown> {
       type: "plain_text",
       text: t("status.form.cancel"),
     },
+    notify_on_close: true,
     blocks: [
       {
         type: "section",
@@ -566,18 +567,21 @@ export default SlackFunction(
           view: completionView,
         });
 
-        return {
+        // 関数を完了させる（addBlockActionsHandler の return では outputs を渡せない）
+        await client.functions.completeSuccess({
+          function_execution_id: body.function_data.execution_id,
           outputs: {
             selected_preset_id: presetId,
           },
-        };
+        });
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         console.error("apply_preset error:", message);
 
-        return {
+        await client.functions.completeError({
+          function_execution_id: body.function_data.execution_id,
           error: message,
-        };
+        });
       }
     },
   )
@@ -611,26 +615,34 @@ export default SlackFunction(
           view: completionView,
         });
 
-        return {
+        // 関数を完了させる
+        await client.functions.completeSuccess({
+          function_execution_id: body.function_data.execution_id,
           outputs: {},
-        };
+        });
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         console.error("clear_status error:", message);
 
-        return {
+        await client.functions.completeError({
+          function_execution_id: body.function_data.execution_id,
           error: message,
-        };
+        });
       }
     },
   )
   .addViewClosedHandler(
     [PRESET_SELECTOR_MODAL_CALLBACK_ID],
-    () => {
-      // モーダルが閉じられた場合は何もせず完了
-      return {
-        outputs: {},
-        completed: true,
-      };
+    async ({ body, client }) => {
+      // モーダルが閉じられた場合は関数を完了させる
+      // （BlockActionsHandler で既に完了している場合はエラーになるが無視する）
+      try {
+        await client.functions.completeSuccess({
+          function_execution_id: body.function_data.execution_id,
+          outputs: {},
+        });
+      } catch {
+        // 既に完了済みの場合は無視
+      }
     },
   );

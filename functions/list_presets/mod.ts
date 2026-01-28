@@ -14,14 +14,14 @@ import { StatusPresetType } from "../../lib/slack/types.ts";
  */
 export const ListPresetsDefinition = DefineFunction({
   callback_id: "list_presets",
-  title: "List Presets",
-  description: "List user's status presets and shared presets",
+  title: "プリセット一覧",
+  description: "ステータスプリセットと共有プリセットの一覧を取得します",
   source_file: "functions/list_presets/mod.ts",
   input_parameters: {
     properties: {
       user_id: {
         type: Schema.slack.types.user_id,
-        description: "Target user ID",
+        description: "対象ユーザーID",
       },
     },
     required: ["user_id"],
@@ -33,22 +33,22 @@ export const ListPresetsDefinition = DefineFunction({
         items: {
           type: StatusPresetType,
         },
-        description: "User's presets",
+        description: "ユーザーのプリセット",
       },
       shared_presets: {
         type: Schema.types.array,
         items: {
           type: StatusPresetType,
         },
-        description: "Shared presets from other users",
+        description: "他のユーザーの共有プリセット",
       },
       count: {
         type: Schema.types.integer,
-        description: "Total count of presets",
+        description: "プリセットの合計数",
       },
       error: {
         type: Schema.types.string,
-        description: "Error message if failed",
+        description: "失敗時のエラーメッセージ",
       },
     },
     required: [],

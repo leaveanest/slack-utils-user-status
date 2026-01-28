@@ -14,8 +14,8 @@ import { SetStatusWorkflow } from "../workflows/set_status_workflow.ts";
  */
 const SetStatusTrigger: Trigger<typeof SetStatusWorkflow.definition> = {
   type: TriggerTypes.Shortcut,
-  name: "Set Status",
-  description: "Set your Slack status",
+  name: "ステータス設定",
+  description: "Slackのステータスを設定します",
   workflow: `#/workflows/${SetStatusWorkflow.definition.callback_id}`,
   inputs: {
     interactivity: {

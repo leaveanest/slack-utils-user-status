@@ -13,18 +13,18 @@ import type { StatusPreset } from "../../lib/types/status.ts";
  */
 export const DeletePresetDefinition = DefineFunction({
   callback_id: "delete_preset",
-  title: "Delete Preset",
-  description: "Delete a status preset",
+  title: "プリセット削除",
+  description: "ステータスプリセットを削除します",
   source_file: "functions/delete_preset/mod.ts",
   input_parameters: {
     properties: {
       user_id: {
         type: Schema.slack.types.user_id,
-        description: "User ID requesting deletion",
+        description: "削除を要求するユーザーID",
       },
       preset_id: {
         type: Schema.types.string,
-        description: "Preset ID to delete",
+        description: "削除するプリセットID",
       },
     },
     required: ["user_id", "preset_id"],
@@ -33,11 +33,11 @@ export const DeletePresetDefinition = DefineFunction({
     properties: {
       success: {
         type: Schema.types.boolean,
-        description: "Whether the preset was deleted successfully",
+        description: "プリセットの削除に成功したかどうか",
       },
       error: {
         type: Schema.types.string,
-        description: "Error message if failed",
+        description: "失敗時のエラーメッセージ",
       },
     },
     required: ["success"],

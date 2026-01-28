@@ -9,6 +9,12 @@ import {
   TEAM_STATUS_MODAL_CALLBACK_ID,
 } from "./mod.ts";
 import type { TeamMemberStatus } from "../get_team_status/mod.ts";
+import { initI18n, loadLocale, setLocale } from "../../lib/i18n/mod.ts";
+
+// i18nの初期化（日本語ロケールを明示的に設定、CI環境対策）
+await initI18n();
+await loadLocale("ja");
+setLocale("ja");
 
 // テスト用のモックメンバー
 function createMockMember(
@@ -134,16 +140,16 @@ Deno.test({
     // ヘッダー + context + divider + statusあり + divider + context + statusなし
     assertEquals(blocks.length >= 5, true);
 
-    // "Status Set" contextが "No Status" contextより前にある
+    // "ステータスあり" contextが "ステータスなし" contextより前にある
     const statusSetIndex = blocks.findIndex(
       (b) =>
         b.type === "context" &&
-        JSON.stringify(b).includes("Status Set"),
+        JSON.stringify(b).includes("ステータスあり"),
     );
     const noStatusIndex = blocks.findIndex(
       (b) =>
         b.type === "context" &&
-        JSON.stringify(b).includes("No Status"),
+        JSON.stringify(b).includes("ステータスなし"),
     );
 
     assertEquals(statusSetIndex < noStatusIndex, true);

@@ -105,7 +105,8 @@
       "shared_presets": "共有プリセット",
       "no_presets": "プリセットがありません。「ステータスを設定」で作成してください。",
       "apply": "適用",
-      "clear_status": "ステータスをクリア"
+      "clear_status": "ステータスをクリア",
+      "no_text": "（テキストなし）"
     },
     "messages": {
       "status_updated": "ステータスを更新しました！",
@@ -132,7 +133,10 @@
       "member_count": "{count}人のメンバー",
       "loading": "チームステータスを読み込み中...",
       "no_members": "チームメンバーが見つかりません",
-      "error": "エラーが発生しました: {error}"
+      "error": "エラーが発生しました: {error}",
+      "status_set": ":speech_balloon: *ステータスあり ({count})*",
+      "no_status_count": ":grey_question: *ステータスなし ({count})*",
+      "and_more": "+{count}人"
     }
   }
 }

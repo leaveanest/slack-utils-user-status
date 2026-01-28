@@ -17,34 +17,34 @@ import type { StatusPreset } from "../../lib/types/status.ts";
  */
 export const CreatePresetDefinition = DefineFunction({
   callback_id: "create_preset",
-  title: "Create Preset",
-  description: "Create a new status preset",
+  title: "プリセット作成",
+  description: "新しいステータスプリセットを作成します",
   source_file: "functions/create_preset/mod.ts",
   input_parameters: {
     properties: {
       user_id: {
         type: Schema.slack.types.user_id,
-        description: "Owner user ID",
+        description: "所有者ユーザーID",
       },
       name: {
         type: Schema.types.string,
-        description: "Preset name (max 50 chars)",
+        description: "プリセット名（最大50文字）",
       },
       status_text: {
         type: Schema.types.string,
-        description: "Status text (max 100 chars)",
+        description: "ステータステキスト（最大100文字）",
       },
       status_emoji: {
         type: Schema.types.string,
-        description: "Status emoji in :emoji: format",
+        description: "ステータス絵文字（:emoji: 形式）",
       },
       duration_minutes: {
         type: Schema.types.integer,
-        description: "Duration in minutes (null = no expiration)",
+        description: "有効期限（分）（null = 無期限）",
       },
       is_shared: {
         type: Schema.types.boolean,
-        description: "Whether to share with other users",
+        description: "他のユーザーと共有するかどうか",
       },
     },
     required: ["user_id", "name"],
@@ -53,15 +53,15 @@ export const CreatePresetDefinition = DefineFunction({
     properties: {
       success: {
         type: Schema.types.boolean,
-        description: "Whether the preset was created successfully",
+        description: "プリセットの作成に成功したかどうか",
       },
       preset_id: {
         type: Schema.types.string,
-        description: "Created preset ID",
+        description: "作成されたプリセットID",
       },
       error: {
         type: Schema.types.string,
-        description: "Error message if failed",
+        description: "失敗時のエラーメッセージ",
       },
     },
     required: ["success"],

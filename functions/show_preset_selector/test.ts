@@ -1,5 +1,6 @@
 import { assertEquals } from "std/testing/asserts.ts";
 import type { SlackAPIClient } from "deno-slack-sdk/types.ts";
+import { initI18n, loadLocale, setLocale } from "../../lib/i18n/mod.ts";
 import {
   APPLY_PRESET_ACTION_PREFIX,
   buildLoadingView,
@@ -14,6 +15,11 @@ import {
 } from "./mod.ts";
 import type { PrivateMetadata } from "./mod.ts";
 import type { StatusPreset } from "../../lib/types/status.ts";
+
+// i18nの初期化（日本語ロケールを明示的に設定、CI環境対策）
+await initI18n();
+await loadLocale("ja");
+setLocale("ja");
 
 // テスト用のモックプリセット
 function createMockPreset(overrides: Partial<StatusPreset> = {}): StatusPreset {
@@ -114,7 +120,7 @@ Deno.test({
     const block = buildPresetBlock(preset);
 
     const text = block.text as Record<string, unknown>;
-    assertEquals((text.text as string).includes("(no text)"), true);
+    assertEquals((text.text as string).includes("（テキストなし）"), true);
   },
 });
 

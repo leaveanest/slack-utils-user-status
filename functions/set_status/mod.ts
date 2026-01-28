@@ -15,26 +15,26 @@ import { setStatusWithUserToken } from "../../lib/slack/user-token.ts";
  */
 export const SetStatusDefinition = DefineFunction({
   callback_id: "set_status",
-  title: "Set User Status",
-  description: "Set user status with emoji, text, and optional expiration",
+  title: "ステータス設定",
+  description: "絵文字、テキスト、有効期限を指定してステータスを設定します",
   source_file: "functions/set_status/mod.ts",
   input_parameters: {
     properties: {
       user_id: {
         type: Schema.slack.types.user_id,
-        description: "Target user ID",
+        description: "対象ユーザーID",
       },
       status_text: {
         type: Schema.types.string,
-        description: "Status text (max 100 chars)",
+        description: "ステータステキスト（最大100文字）",
       },
       status_emoji: {
         type: Schema.types.string,
-        description: "Status emoji in :emoji: format",
+        description: "ステータス絵文字（:emoji: 形式）",
       },
       expiration_minutes: {
         type: Schema.types.integer,
-        description: "Minutes until expiration (0 = no expiration)",
+        description: "有効期限（分）（0 = 無期限）",
       },
     },
     required: ["user_id"],
@@ -43,19 +43,19 @@ export const SetStatusDefinition = DefineFunction({
     properties: {
       success: {
         type: Schema.types.boolean,
-        description: "Whether the status was set successfully",
+        description: "ステータスの設定に成功したかどうか",
       },
       previous_status_text: {
         type: Schema.types.string,
-        description: "Previous status text",
+        description: "以前のステータステキスト",
       },
       previous_status_emoji: {
         type: Schema.types.string,
-        description: "Previous status emoji",
+        description: "以前のステータス絵文字",
       },
       error: {
         type: Schema.types.string,
-        description: "Error message if failed",
+        description: "失敗時のエラーメッセージ",
       },
     },
     required: ["success"],
@@ -126,6 +126,7 @@ export async function getCurrentStatus(
  * Bot Token では他ユーザーのステータスを変更できないため、
  * 環境変数 SLACK_ADMIN_USER_TOKEN に設定された User OAuth Token を使用します。
  *
+ * @param adminToken - Admin User Token
  * @param userId - ユーザーID
  * @param statusText - ステータステキスト
  * @param statusEmoji - ステータス絵文字
@@ -134,10 +135,11 @@ export async function getCurrentStatus(
  *
  * @example
  * ```typescript
- * await setUserStatus("U12345678", "In a meeting", ":calendar:", 60);
+ * await setUserStatus(adminToken, "U12345678", "In a meeting", ":calendar:", 60);
  * ```
  */
 export async function setUserStatus(
+  adminToken: string,
   userId: string,
   statusText: string,
   statusEmoji: string,
@@ -146,6 +148,7 @@ export async function setUserStatus(
   const statusExpiration = calculateExpiration(expirationMinutes);
 
   const response = await setStatusWithUserToken(
+    adminToken,
     userId,
     statusText,
     statusEmoji,
@@ -160,8 +163,14 @@ export async function setUserStatus(
 
 export default SlackFunction(
   SetStatusDefinition,
-  async ({ inputs, client }) => {
+  async ({ inputs, client, env }) => {
     try {
+      // Admin User Token を取得
+      const adminToken = env.SLACK_ADMIN_USER_TOKEN;
+      if (!adminToken) {
+        throw new Error(t("status.errors.admin_token_not_configured"));
+      }
+
       // ユーザーIDのバリデーション
       const userId = userIdSchema.parse(inputs.user_id);
 
@@ -178,6 +187,7 @@ export default SlackFunction(
 
       // ステータスを設定
       await setUserStatus(
+        adminToken,
         userId,
         validatedInput.status_text,
         validatedInput.status_emoji,

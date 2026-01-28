@@ -30,14 +30,14 @@ export interface TeamMemberStatus {
  */
 export const GetTeamStatusDefinition = DefineFunction({
   callback_id: "get_team_status",
-  title: "Get Team Status",
-  description: "Get status of team members",
+  title: "チームステータス取得",
+  description: "チームメンバーのステータスを取得します",
   source_file: "functions/get_team_status/mod.ts",
   input_parameters: {
     properties: {
       limit: {
         type: Schema.types.integer,
-        description: "Maximum number of members to fetch (default: 50)",
+        description: "取得するメンバーの最大数（デフォルト: 50）",
       },
     },
     required: [],
@@ -49,15 +49,15 @@ export const GetTeamStatusDefinition = DefineFunction({
         items: {
           type: TeamMemberStatusType,
         },
-        description: "List of team member statuses",
+        description: "チームメンバーのステータス一覧",
       },
       count: {
         type: Schema.types.integer,
-        description: "Number of members returned",
+        description: "返されたメンバーの数",
       },
       error: {
         type: Schema.types.string,
-        description: "Error message if failed",
+        description: "失敗時のエラーメッセージ",
       },
     },
     required: [],

@@ -21,13 +21,14 @@ import { StatusHistoryDatastore } from "./datastores/status_history.ts";
 import { StatusPresetType, TeamMemberStatusType } from "./lib/slack/types.ts";
 
 // Load from environment variables with fallback defaults
-const APP_NAME = Deno.env.get("SLACK_APP_NAME") || "Slack Utils Template";
+const APP_NAME = Deno.env.get("SLACK_APP_NAME") || "ステータスマネージャー";
 const APP_DESCRIPTION = Deno.env.get("SLACK_APP_DESCRIPTION") ||
-  "A template for Slack workflow development";
+  "Slackのステータスを効率的に管理するアプリ";
 
 export default Manifest({
   name: APP_NAME,
   description: APP_DESCRIPTION,
+  displayName: "status-manager",
   icon: "assets/icon.png",
   workflows: [
     ExampleWorkflow,

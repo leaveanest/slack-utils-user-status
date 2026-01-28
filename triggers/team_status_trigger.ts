@@ -14,8 +14,8 @@ import { TeamStatusWorkflow } from "../workflows/team_status_workflow.ts";
  */
 const TeamStatusTrigger: Trigger<typeof TeamStatusWorkflow.definition> = {
   type: TriggerTypes.Shortcut,
-  name: "Team Status",
-  description: "View team members status",
+  name: "チームステータス",
+  description: "チームメンバーのステータスを確認します",
   workflow: `#/workflows/${TeamStatusWorkflow.definition.callback_id}`,
   inputs: {
     interactivity: {

@@ -15,18 +15,18 @@ import { setStatusWithUserToken } from "../../lib/slack/user-token.ts";
  */
 export const ApplyPresetDefinition = DefineFunction({
   callback_id: "apply_preset",
-  title: "Apply Preset",
-  description: "Apply a saved preset to user status",
+  title: "プリセット適用",
+  description: "保存済みプリセットをユーザーステータスに適用します",
   source_file: "functions/apply_preset/mod.ts",
   input_parameters: {
     properties: {
       user_id: {
         type: Schema.slack.types.user_id,
-        description: "Target user ID",
+        description: "対象ユーザーID",
       },
       preset_id: {
         type: Schema.types.string,
-        description: "Preset ID to apply",
+        description: "適用するプリセットID",
       },
     },
     required: ["user_id", "preset_id"],
@@ -35,19 +35,19 @@ export const ApplyPresetDefinition = DefineFunction({
     properties: {
       success: {
         type: Schema.types.boolean,
-        description: "Whether the preset was applied successfully",
+        description: "プリセットの適用に成功したかどうか",
       },
       status_text: {
         type: Schema.types.string,
-        description: "Applied status text",
+        description: "適用されたステータステキスト",
       },
       status_emoji: {
         type: Schema.types.string,
-        description: "Applied status emoji",
+        description: "適用されたステータス絵文字",
       },
       error: {
         type: Schema.types.string,
-        description: "Error message if failed",
+        description: "失敗時のエラーメッセージ",
       },
     },
     required: ["success"],
@@ -118,6 +118,7 @@ export async function getPresetById(
  *
  * Admin User Token を使用して users.profile.set API を呼び出します。
  *
+ * @param adminToken - Admin User Token
  * @param userId - ユーザーID
  * @param statusText - ステータステキスト
  * @param statusEmoji - ステータス絵文字
@@ -126,10 +127,11 @@ export async function getPresetById(
  *
  * @example
  * ```typescript
- * await setUserStatus("U12345678", "In a meeting", ":calendar:", 60);
+ * await setUserStatus(adminToken, "U12345678", "In a meeting", ":calendar:", 60);
  * ```
  */
 export async function setUserStatus(
+  adminToken: string,
   userId: string,
   statusText: string,
   statusEmoji: string,
@@ -138,6 +140,7 @@ export async function setUserStatus(
   const statusExpiration = calculateExpiration(durationMinutes);
 
   const response = await setStatusWithUserToken(
+    adminToken,
     userId,
     statusText,
     statusEmoji,
@@ -152,8 +155,14 @@ export async function setUserStatus(
 
 export default SlackFunction(
   ApplyPresetDefinition,
-  async ({ inputs, client }) => {
+  async ({ inputs, client, env }) => {
     try {
+      // Admin User Token を取得
+      const adminToken = env.SLACK_ADMIN_USER_TOKEN;
+      if (!adminToken) {
+        throw new Error(t("status.errors.admin_token_not_configured"));
+      }
+
       // ユーザーIDのバリデーション
       const userId = userIdSchema.parse(inputs.user_id);
       const presetId = inputs.preset_id;
@@ -183,6 +192,7 @@ export default SlackFunction(
 
       // ステータスを設定
       await setUserStatus(
+        adminToken,
         userId,
         preset.status_text,
         preset.status_emoji,

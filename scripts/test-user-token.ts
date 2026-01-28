@@ -6,7 +6,6 @@
 import { load } from "std/dotenv/mod.ts";
 import {
   clearStatusWithUserToken,
-  getAdminUserToken,
   setStatusWithUserToken,
 } from "../lib/slack/user-token.ts";
 
@@ -18,13 +17,12 @@ async function main() {
 
   // 1. トークン確認
   console.log("1. トークン確認...");
-  try {
-    const token = getAdminUserToken();
-    console.log(`   ✅ トークン取得成功: ${token.substring(0, 5)}...`);
-  } catch (e) {
-    console.error(`   ❌ エラー: ${(e as Error).message}`);
+  const adminToken = Deno.env.get("SLACK_ADMIN_USER_TOKEN");
+  if (!adminToken) {
+    console.error("   ❌ SLACK_ADMIN_USER_TOKEN 環境変数が設定されていません");
     Deno.exit(1);
   }
+  console.log(`   ✅ トークン取得成功: ${adminToken.substring(0, 5)}...`);
 
   // テスト用のユーザーID（自分のIDを使用）
   // 注意: 実際のユーザーIDに置き換えてください
@@ -43,6 +41,7 @@ async function main() {
   console.log(`\n2. ステータス設定テスト (user: ${testUserId})...`);
   try {
     const response = await setStatusWithUserToken(
+      adminToken,
       testUserId,
       "テスト中 🧪",
       ":test_tube:",
@@ -65,7 +64,7 @@ async function main() {
   // 3. ステータスクリアテスト
   console.log("\n3. ステータスクリアテスト...");
   try {
-    const response = await clearStatusWithUserToken(testUserId);
+    const response = await clearStatusWithUserToken(adminToken, testUserId);
 
     if (response.ok) {
       console.log("   ✅ ステータスクリア成功!");

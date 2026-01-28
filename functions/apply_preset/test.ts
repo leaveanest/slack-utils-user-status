@@ -11,6 +11,8 @@ interface MockDatastoreGetResult {
   error?: string;
 }
 
+const TEST_ADMIN_TOKEN = "xoxp-test-token";
+
 // サンプルプリセットデータ
 const samplePreset: StatusPreset = {
   id: "preset-001",
@@ -204,21 +206,14 @@ Deno.test({
 });
 
 describe("setUserStatus", () => {
-  const originalToken = Deno.env.get("SLACK_ADMIN_USER_TOKEN");
   let originalFetch: typeof globalThis.fetch;
 
   beforeEach(() => {
     originalFetch = globalThis.fetch;
-    Deno.env.set("SLACK_ADMIN_USER_TOKEN", "xoxp-test-token");
   });
 
   afterEach(() => {
     globalThis.fetch = originalFetch;
-    if (originalToken) {
-      Deno.env.set("SLACK_ADMIN_USER_TOKEN", originalToken);
-    } else {
-      Deno.env.delete("SLACK_ADMIN_USER_TOKEN");
-    }
   });
 
   it("正常にステータスを設定できる", async () => {
@@ -237,7 +232,13 @@ describe("setUserStatus", () => {
       );
     };
 
-    await setUserStatus("U12345678", "In a meeting", ":calendar:", 60);
+    await setUserStatus(
+      TEST_ADMIN_TOKEN,
+      "U12345678",
+      "In a meeting",
+      ":calendar:",
+      60,
+    );
 
     // リクエストボディが正しく設定されたか確認
     assertEquals(capturedBody !== undefined, true);
@@ -264,7 +265,7 @@ describe("setUserStatus", () => {
       );
     };
 
-    await setUserStatus("U12345678", "Away", ":away:", null);
+    await setUserStatus(TEST_ADMIN_TOKEN, "U12345678", "Away", ":away:", null);
 
     const parsed = JSON.parse(capturedBody!);
     assertEquals(parsed.profile.status_expiration, 0);
@@ -281,7 +282,7 @@ describe("setUserStatus", () => {
     };
 
     try {
-      await setUserStatus("U12345678", "Test", ":test:", 0);
+      await setUserStatus(TEST_ADMIN_TOKEN, "U12345678", "Test", ":test:", 0);
       assertEquals(true, false, "Should have thrown an error");
     } catch (error) {
       assertEquals(error instanceof Error, true);

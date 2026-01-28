@@ -105,7 +105,8 @@
       "shared_presets": "Shared Presets",
       "no_presets": "No presets yet. Create one in Set Status.",
       "apply": "Apply",
-      "clear_status": "Clear Status"
+      "clear_status": "Clear Status",
+      "no_text": "(no text)"
     },
     "messages": {
       "status_updated": "Status updated successfully!",
@@ -132,7 +133,10 @@
       "member_count": "{count} members",
       "loading": "Loading team status...",
       "no_members": "No team members found",
-      "error": "An error occurred: {error}"
+      "error": "An error occurred: {error}",
+      "status_set": ":speech_balloon: *Status Set ({count})*",
+      "no_status_count": ":grey_question: *No Status ({count})*",
+      "and_more": "+{count} more"
     }
   }
 }

@@ -282,18 +282,18 @@ export function buildStatusFormView(userId: string): Record<string, unknown> {
  */
 export const ShowStatusFormDefinition = DefineFunction({
   callback_id: "show_status_form",
-  title: "Show Status Form",
-  description: "Display a modal to set user status",
+  title: "ステータス設定フォーム",
+  description: "ステータスを設定するモーダルを表示します",
   source_file: "functions/show_status_form/mod.ts",
   input_parameters: {
     properties: {
       interactivity: {
         type: Schema.slack.types.interactivity,
-        description: "Interactivity context",
+        description: "インタラクティビティコンテキスト",
       },
       user_id: {
         type: Schema.slack.types.user_id,
-        description: "User ID",
+        description: "ユーザーID",
       },
     },
     required: ["interactivity", "user_id"],
@@ -302,23 +302,23 @@ export const ShowStatusFormDefinition = DefineFunction({
     properties: {
       status_text: {
         type: Schema.types.string,
-        description: "Set status text",
+        description: "設定されたステータステキスト",
       },
       status_emoji: {
         type: Schema.types.string,
-        description: "Set status emoji",
+        description: "設定されたステータス絵文字",
       },
       expiration_minutes: {
         type: Schema.types.integer,
-        description: "Expiration in minutes",
+        description: "有効期限（分）",
       },
       preset_name: {
         type: Schema.types.string,
-        description: "Created preset name (if saved)",
+        description: "作成されたプリセット名（保存した場合）",
       },
       save_as_preset: {
         type: Schema.types.boolean,
-        description: "Whether preset was saved",
+        description: "プリセットとして保存したかどうか",
       },
     },
     required: [],
@@ -389,12 +389,14 @@ async function getNextSortOrder(
  *
  * Admin User Token を使用して users.profile.set API を呼び出します。
  *
+ * @param adminToken - Admin User Token
  * @param userId - ユーザーID
  * @param statusText - ステータステキスト
  * @param statusEmoji - ステータス絵文字
  * @param expirationMinutes - 有効期限（分）
  */
 async function setUserStatus(
+  adminToken: string,
   userId: string,
   statusText: string,
   statusEmoji: string,
@@ -403,6 +405,7 @@ async function setUserStatus(
   const statusExpiration = calculateExpiration(expirationMinutes);
 
   const response = await setStatusWithUserToken(
+    adminToken,
     userId,
     statusText,
     statusEmoji,
@@ -481,8 +484,14 @@ interface ViewState {
 
 export default SlackFunction(
   ShowStatusFormDefinition,
-  async ({ inputs, client }) => {
+  async ({ inputs, client, env }) => {
     try {
+      // Admin User Tokenの事前チェック（未設定ならフォームを開かずエラーを返す）
+      const adminToken = env.SLACK_ADMIN_USER_TOKEN;
+      if (!adminToken) {
+        throw new Error(t("status.errors.admin_token_not_configured"));
+      }
+
       // ユーザーIDのバリデーション
       const userId = userIdSchema.parse(inputs.user_id);
 
@@ -515,8 +524,14 @@ export default SlackFunction(
 )
   .addViewSubmissionHandler(
     [STATUS_FORM_MODAL_CALLBACK_ID],
-    async ({ view, client }) => {
+    async ({ view, client, env }) => {
       try {
+        // Admin User Token を取得
+        const adminToken = env.SLACK_ADMIN_USER_TOKEN;
+        if (!adminToken) {
+          throw new Error(t("status.errors.admin_token_not_configured"));
+        }
+
         // private_metadataからユーザーIDを取得
         const metadata: PrivateMetadata = JSON.parse(
           view.private_metadata || "{}",
@@ -553,6 +568,7 @@ export default SlackFunction(
 
         // ステータスを設定
         await setUserStatus(
+          adminToken,
           userId,
           validatedStatus.status_text,
           validatedStatus.status_emoji,
@@ -590,7 +606,6 @@ export default SlackFunction(
         }
 
         return {
-          response_action: "clear",
           outputs: {
             status_text: validatedStatus.status_text,
             status_emoji: validatedStatus.status_emoji,
@@ -600,16 +615,39 @@ export default SlackFunction(
           },
         };
       } catch (error) {
-        // Zodバリデーションエラーの場合は詳細なメッセージを生成
-        const message = error instanceof z.ZodError
-          ? error.errors.map((e) => e.message).join(", ")
-          : error instanceof Error
-          ? error.message
-          : String(error);
+        if (error instanceof z.ZodError) {
+          // Zodバリデーションエラーの場合はフィールドごとにエラーをマッピング
+          const fieldToBlockId: Record<string, string> = {
+            status_text: BLOCK_IDS.STATUS_TEXT,
+            status_emoji: BLOCK_IDS.STATUS_EMOJI,
+            expiration_minutes: BLOCK_IDS.EXPIRATION,
+          };
 
+          const errors: Record<string, string> = {};
+          for (const e of error.errors) {
+            const fieldName = e.path[0]?.toString() ?? "";
+            const blockId = fieldToBlockId[fieldName] ?? BLOCK_IDS.STATUS_TEXT;
+            // 同一ブロックに複数エラーがある場合はカンマ区切りで結合
+            errors[blockId] = errors[blockId]
+              ? `${errors[blockId]}, ${e.message}`
+              : e.message;
+          }
+
+          console.error(
+            "show_status_form validation error:",
+            JSON.stringify(errors),
+          );
+
+          return {
+            response_action: "errors",
+            errors,
+          };
+        }
+
+        // Zod以外のエラーはSTATUS_TEXTにフォールバック
+        const message = error instanceof Error ? error.message : String(error);
         console.error("show_status_form submission error:", message);
 
-        // エラー時はモーダルを更新してエラーを表示
         return {
           response_action: "errors",
           errors: {

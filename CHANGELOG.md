@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.6.0](https://github.com/leaveanest/slack-utils-user-status/compare/v1.5.2...v1.6.0) (2026-01-29)
+
+
+### Features
+
+* UI/説明文の日本語化 ([469f8cd](https://github.com/leaveanest/slack-utils-user-status/commit/469f8cd014c51129d4e11ae0538354796e80ba18))
+
+
+### Bug Fixes
+
+* ViewSubmission ハンドラーの response_action: "clear" を削除しモーダルが閉じない問題を修正 ([d86d9f9](https://github.com/leaveanest/slack-utils-user-status/commit/d86d9f9c4e60b7c442645cf2ec521299fd6d79c3))
+* テストで日本語ロケールを明示的に設定（macOS CI対策） ([6fb9147](https://github.com/leaveanest/slack-utils-user-status/commit/6fb91472c02366509a576abbd9a41bd0332985d8))
+* テストのi18nレースコンディション対策（show_preset_selector, show_team_status） ([5b92d82](https://github.com/leaveanest/slack-utils-user-status/commit/5b92d82ba6edf9a80b59f8a76aef77151bda3d36))
+* テストの安定性修正（i18nレースコンディション対策） ([c73a647](https://github.com/leaveanest/slack-utils-user-status/commit/c73a647de69b9dcc96e43cb60cdaac9b6cbadd2b))
+* モーダルが閉じない問題を修正（completeSuccess使用） ([d090e84](https://github.com/leaveanest/slack-utils-user-status/commit/d090e84c3bf5cf4dc20083e991179f72e1305a0a))
+
 ## [1.5.2](https://github.com/leaveanest/slack-utils-user-status/compare/v1.5.1...v1.5.2) (2026-01-27)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.0](https://github.com/leaveanest/slack-utils-user-status/compare/v1.6.1...v1.7.0) (2026-02-03)
+
+
+### Features
+
+* チームステータスのユーザー表示をメンション形式に変更 ([527de04](https://github.com/leaveanest/slack-utils-user-status/commit/527de044b3aa571ee10530edf7e32b4e4a95f517))
+
 ## [1.6.1](https://github.com/leaveanest/slack-utils-user-status/compare/v1.6.0...v1.6.1) (2026-02-03)
 
 

@@ -87,7 +87,7 @@ export function buildMemberStatusBlock(
     type: "section",
     text: {
       type: "mrkdwn",
-      text: `*${member.display_name}*\n${statusText}`,
+      text: `<@${member.user_id}>\n${statusText}`,
     },
   };
 }
@@ -174,12 +174,12 @@ export function buildTeamStatusBlocks(
 
     // ステータスなしのメンバーは簡略表示（最大10人）
     const displayMembers = membersWithoutStatus.slice(0, 10);
-    const names = displayMembers.map((m) => m.display_name).join(", ");
+    const mentions = displayMembers.map((m) => `<@${m.user_id}>`).join(" ");
     const remaining = membersWithoutStatus.length - displayMembers.length;
 
-    let text = names;
+    let text = mentions;
     if (remaining > 0) {
-      text += ` ${t("status.team.and_more", { count: remaining })}`;
+      text += `\n${t("status.team.and_more", { count: remaining })}`;
     }
 
     blocks.push({

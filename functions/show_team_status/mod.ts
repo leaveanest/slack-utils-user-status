@@ -295,7 +295,7 @@ export function buildErrorView(
 
 export default SlackFunction(
   ShowTeamStatusDefinition,
-  async ({ inputs, client }) => {
+  async ({ inputs, client, team_id }) => {
     let viewId: string | undefined;
     let userId: string = "";
 
@@ -322,9 +322,11 @@ export default SlackFunction(
       viewId = (openResult.view as { id: string })?.id;
 
       // チームメンバーのステータスを取得
+      // Enterprise Grid環境ではteam_idが必須なので、コンテキストから渡す
       const members = await getTeamMemberStatuses(
         client as unknown as SlackAPIClient,
         limit,
+        team_id,
       );
 
       // モーダルを更新

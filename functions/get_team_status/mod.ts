@@ -111,6 +111,7 @@ interface UsersListResponse {
 export async function getTeamMemberStatuses(
   client: SlackAPIClient,
   limit: number,
+  teamId?: string,
 ): Promise<TeamMemberStatus[]> {
   const members: TeamMemberStatus[] = [];
   let cursor: string | undefined;
@@ -120,11 +121,16 @@ export async function getTeamMemberStatuses(
     const requestLimit = Math.min(limit - members.length, 200);
 
     // cursorが空文字列の場合は除外（Slack APIは空文字列をmissing_argumentエラーとして扱う）
-    const requestParams: { limit: number; cursor?: string } = {
-      limit: requestLimit,
-    };
+    // Enterprise Grid環境ではteam_idが必須
+    const requestParams: { limit: number; cursor?: string; team_id?: string } =
+      {
+        limit: requestLimit,
+      };
     if (cursor) {
       requestParams.cursor = cursor;
+    }
+    if (teamId) {
+      requestParams.team_id = teamId;
     }
 
     const response = await client.users.list(
@@ -183,12 +189,13 @@ export function filterMembersWithStatus(
 
 export default SlackFunction(
   GetTeamStatusDefinition,
-  async ({ inputs, client }) => {
+  async ({ inputs, client, team_id }) => {
     try {
       const limit = inputs.limit || 50;
 
       // チームメンバーのステータスを取得
-      const members = await getTeamMemberStatuses(client, limit);
+      // Enterprise Grid環境ではteam_idが必須なので、コンテキストから渡す
+      const members = await getTeamMemberStatuses(client, limit, team_id);
 
       return {
         outputs: {

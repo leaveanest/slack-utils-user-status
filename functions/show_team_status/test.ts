@@ -37,6 +37,7 @@ Deno.test({
   sanitizeOps: false,
   fn: () => {
     const member = createMockMember({
+      user_id: "U11111111",
       display_name: "John Doe",
       status_text: "In a meeting",
       status_emoji: ":calendar:",
@@ -47,7 +48,8 @@ Deno.test({
     assertEquals(block.type, "section");
     const text = block.text as Record<string, unknown>;
     assertEquals(text.type, "mrkdwn");
-    assertEquals((text.text as string).includes("*John Doe*"), true);
+    // メンション形式で表示されることを確認
+    assertEquals((text.text as string).includes("<@U11111111>"), true);
     assertEquals((text.text as string).includes(":calendar:"), true);
     assertEquals((text.text as string).includes("In a meeting"), true);
   },
@@ -59,6 +61,7 @@ Deno.test({
   sanitizeOps: false,
   fn: () => {
     const member = createMockMember({
+      user_id: "U22222222",
       display_name: "Jane Doe",
       status_text: "",
       status_emoji: "",
@@ -68,7 +71,8 @@ Deno.test({
 
     assertEquals(block.type, "section");
     const text = block.text as Record<string, unknown>;
-    assertEquals((text.text as string).includes("*Jane Doe*"), true);
+    // メンション形式で表示されることを確認
+    assertEquals((text.text as string).includes("<@U22222222>"), true);
     // "No status set" or similar message in italics
     assertEquals((text.text as string).includes("_"), true);
   },
@@ -80,6 +84,7 @@ Deno.test({
   sanitizeOps: false,
   fn: () => {
     const member = createMockMember({
+      user_id: "U33333333",
       display_name: "Bob",
       status_text: "",
       status_emoji: ":palm_tree:",
@@ -90,9 +95,8 @@ Deno.test({
     const text = block.text as Record<string, unknown>;
     const textStr = text.text as string;
     assertEquals(textStr.includes(":palm_tree:"), true);
-    // Should not show "No status set" in italic format (_text_)
-    // Note: emoji contains underscore, so we check for the pattern _word_ instead
-    assertEquals(/\*Bob\*/.test(textStr), true);
+    // メンション形式で表示されることを確認
+    assertEquals(textStr.includes("<@U33333333>"), true);
     assertEquals(textStr.includes("No status"), false);
   },
 });

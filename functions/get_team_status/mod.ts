@@ -89,6 +89,15 @@ interface UsersListResponse {
 }
 
 /**
+ * auth.test API レスポンスの型
+ */
+interface AuthTestResponse {
+  ok: boolean;
+  team_id?: string;
+  error?: string;
+}
+
+/**
  * チームメンバーのステータス一覧を取得
  *
  * users.list APIを使用してチームメンバーを取得し、
@@ -115,16 +124,29 @@ export async function getTeamMemberStatuses(
   const members: TeamMemberStatus[] = [];
   let cursor: string | undefined;
 
+  // Enterprise Grid環境ではteam_idが必須のため、auth.testで取得
+  const authResponse = await client.auth.test() as AuthTestResponse;
+  if (!authResponse.ok) {
+    const errorCode = authResponse.error ?? "unknown_error";
+    throw new Error(t("status.errors.api_call_failed", { error: errorCode }));
+  }
+  const teamId = authResponse.team_id;
+
   do {
     // API最大は200、残り必要数を考慮してリクエスト
     const requestLimit = Math.min(limit - members.length, 200);
 
     // cursorが空文字列の場合は除外（Slack APIは空文字列をmissing_argumentエラーとして扱う）
-    const requestParams: { limit: number; cursor?: string } = {
-      limit: requestLimit,
-    };
+    // team_idはEnterprise Grid環境で必須
+    const requestParams: { limit: number; cursor?: string; team_id?: string } =
+      {
+        limit: requestLimit,
+      };
     if (cursor) {
       requestParams.cursor = cursor;
+    }
+    if (teamId) {
+      requestParams.team_id = teamId;
     }
 
     const response = await client.users.list(

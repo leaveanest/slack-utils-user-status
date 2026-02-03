@@ -31,6 +31,17 @@ interface MockUsersListResponse {
   };
 }
 
+// Mock auth.test response type
+interface MockAuthTestResponse {
+  ok: boolean;
+  team_id?: string;
+  error?: string;
+}
+
+// デフォルトのauth.testモック
+const defaultAuthTestMock = (): Promise<MockAuthTestResponse> =>
+  Promise.resolve({ ok: true, team_id: "T12345678" });
+
 // テスト用のモックメンバー
 function createMockMember(
   overrides: Partial<MockMember> = {},
@@ -71,6 +82,7 @@ Deno.test({
     ];
 
     const mockClient = {
+      auth: { test: defaultAuthTestMock },
       users: {
         list: (): Promise<MockUsersListResponse> =>
           Promise.resolve({
@@ -101,6 +113,7 @@ Deno.test({
     ];
 
     const mockClient = {
+      auth: { test: defaultAuthTestMock },
       users: {
         list: (): Promise<MockUsersListResponse> =>
           Promise.resolve({
@@ -128,6 +141,7 @@ Deno.test({
     ];
 
     const mockClient = {
+      auth: { test: defaultAuthTestMock },
       users: {
         list: (): Promise<MockUsersListResponse> =>
           Promise.resolve({
@@ -155,6 +169,7 @@ Deno.test({
     ];
 
     const mockClient = {
+      auth: { test: defaultAuthTestMock },
       users: {
         list: (): Promise<MockUsersListResponse> =>
           Promise.resolve({
@@ -187,6 +202,7 @@ Deno.test({
     ];
 
     const mockClient = {
+      auth: { test: defaultAuthTestMock },
       users: {
         list: (): Promise<MockUsersListResponse> =>
           Promise.resolve({
@@ -212,6 +228,7 @@ Deno.test({
   sanitizeOps: false,
   fn: async () => {
     const mockClient = {
+      auth: { test: defaultAuthTestMock },
       users: {
         list: (): Promise<MockUsersListResponse> =>
           Promise.resolve({
@@ -233,6 +250,7 @@ Deno.test({
   sanitizeOps: false,
   fn: async () => {
     const mockClient = {
+      auth: { test: defaultAuthTestMock },
       users: {
         list: (): Promise<MockUsersListResponse> =>
           Promise.resolve({
@@ -318,6 +336,7 @@ Deno.test({
     let callCount = 0;
 
     const mockClient = {
+      auth: { test: defaultAuthTestMock },
       users: {
         list: (
           params: { limit?: number; cursor?: string },
@@ -369,6 +388,7 @@ Deno.test({
     let callCount = 0;
 
     const mockClient = {
+      auth: { test: defaultAuthTestMock },
       users: {
         list: (): Promise<MockUsersListResponse> => {
           callCount++;
@@ -415,6 +435,7 @@ Deno.test({
     let callCount = 0;
 
     const mockClient = {
+      auth: { test: defaultAuthTestMock },
       users: {
         list: (): Promise<MockUsersListResponse> => {
           callCount++;
@@ -463,6 +484,7 @@ Deno.test({
     let callCount = 0;
 
     const mockClient = {
+      auth: { test: defaultAuthTestMock },
       users: {
         list: (
           params: { limit?: number; cursor?: string },
@@ -495,5 +517,67 @@ Deno.test({
     // 空文字列cursorでは次ページを取得しない
     assertEquals(callCount, 1);
     assertEquals(members.length, 1);
+  },
+});
+
+Deno.test({
+  name: "getTeamMemberStatuses: auth.test APIエラー時は例外を投げる",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  fn: async () => {
+    const mockClient = {
+      auth: {
+        test: (): Promise<MockAuthTestResponse> =>
+          Promise.resolve({
+            ok: false,
+            error: "invalid_auth",
+          }),
+      },
+      users: {
+        list: (): Promise<MockUsersListResponse> => {
+          throw new Error("Should not be called when auth.test fails");
+        },
+      },
+    } as unknown as SlackAPIClient;
+
+    try {
+      await getTeamMemberStatuses(mockClient, 50);
+      assertEquals(true, false, "Should have thrown an error");
+    } catch (error) {
+      assertEquals(error instanceof Error, true);
+      assertEquals((error as Error).message.includes("invalid_auth"), true);
+    }
+  },
+});
+
+Deno.test({
+  name: "getTeamMemberStatuses: team_idがusers.list APIに渡される",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  fn: async () => {
+    let receivedTeamId: string | undefined;
+
+    const mockClient = {
+      auth: {
+        test: (): Promise<MockAuthTestResponse> =>
+          Promise.resolve({ ok: true, team_id: "T_TEST_TEAM" }),
+      },
+      users: {
+        list: (
+          params: { limit?: number; cursor?: string; team_id?: string },
+        ): Promise<MockUsersListResponse> => {
+          receivedTeamId = params.team_id;
+          return Promise.resolve({
+            ok: true,
+            members: [createMockMember({ id: "U11111111" })],
+          });
+        },
+      },
+    } as unknown as SlackAPIClient;
+
+    await getTeamMemberStatuses(mockClient, 50);
+
+    // team_idがusers.listに渡されていることを確認
+    assertEquals(receivedTeamId, "T_TEST_TEAM");
   },
 });

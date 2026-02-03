@@ -453,3 +453,109 @@ Deno.test({
     assertEquals(members[1].user_id, "U33333333");
   },
 });
+
+Deno.test({
+  name:
+    "getTeamMemberStatuses: 空文字列のnext_cursorはページネーション終了として扱う",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  fn: async () => {
+    let callCount = 0;
+
+    const mockClient = {
+      users: {
+        list: (
+          params: { limit?: number; cursor?: string },
+        ): Promise<MockUsersListResponse> => {
+          callCount++;
+
+          if (callCount === 1) {
+            // cursorパラメータが渡されていないことを確認
+            assertEquals(params.cursor, undefined);
+            return Promise.resolve({
+              ok: true,
+              members: [
+                createMockMember({ id: "U11111111" }),
+              ],
+              response_metadata: {
+                // 空文字列のnext_cursor（Slack APIが返すことがある）
+                next_cursor: "",
+              },
+            });
+          } else {
+            // 空文字列cursorでは呼ばれないはず
+            throw new Error("Should not be called with empty cursor");
+          }
+        },
+      },
+    } as unknown as SlackAPIClient;
+
+    const members = await getTeamMemberStatuses(mockClient, 50);
+
+    // 空文字列cursorでは次ページを取得しない
+    assertEquals(callCount, 1);
+    assertEquals(members.length, 1);
+  },
+});
+
+Deno.test({
+  name: "getTeamMemberStatuses: team_idパラメータがAPIに渡される",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  fn: async () => {
+    let receivedTeamId: string | undefined;
+
+    const mockClient = {
+      users: {
+        list: (
+          params: { limit?: number; cursor?: string; team_id?: string },
+        ): Promise<MockUsersListResponse> => {
+          receivedTeamId = params.team_id;
+          return Promise.resolve({
+            ok: true,
+            members: [
+              createMockMember({ id: "U11111111" }),
+            ],
+          });
+        },
+      },
+    } as unknown as SlackAPIClient;
+
+    // team_idを渡して呼び出し
+    await getTeamMemberStatuses(mockClient, 50, "T12345678");
+
+    // team_idがAPIに渡されることを確認
+    assertEquals(receivedTeamId, "T12345678");
+  },
+});
+
+Deno.test({
+  name: "getTeamMemberStatuses: team_idが未指定の場合はAPIに渡されない",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  fn: async () => {
+    let receivedParams: Record<string, unknown> = {};
+
+    const mockClient = {
+      users: {
+        list: (
+          params: { limit?: number; cursor?: string; team_id?: string },
+        ): Promise<MockUsersListResponse> => {
+          receivedParams = { ...params };
+          return Promise.resolve({
+            ok: true,
+            members: [
+              createMockMember({ id: "U11111111" }),
+            ],
+          });
+        },
+      },
+    } as unknown as SlackAPIClient;
+
+    // team_idを渡さずに呼び出し
+    await getTeamMemberStatuses(mockClient, 50);
+
+    // team_idがAPIに渡されないことを確認
+    assertEquals("team_id" in receivedParams, false);
+  },
+});

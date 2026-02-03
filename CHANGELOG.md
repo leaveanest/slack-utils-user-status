@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.6.1](https://github.com/leaveanest/slack-utils-user-status/compare/v1.6.0...v1.6.1) (2026-02-03)
+
+
+### Bug Fixes
+
+* auth.testによるteam_access_not_grantedエラーを修正 ([4290f23](https://github.com/leaveanest/slack-utils-user-status/commit/4290f23a69615a3d8eb77aa5eb19fb2518543118))
+* Enterprise Grid対応 - SlackFunctionコンテキストからteam_idを取得 ([1922de6](https://github.com/leaveanest/slack-utils-user-status/commit/1922de6890b0be21928d2f3bab68d2130b070735))
+* Enterprise Grid対応 - team_idがEnterprise IDの場合はauth.teams.listからワークスペースIDを取得 ([2090d58](https://github.com/leaveanest/slack-utils-user-status/commit/2090d587f1027f3068e7fe0be47c7bd4fca79aa9))
+* Enterprise Grid環境でのusers.list API missing_argumentエラーを修正 ([7bc06b2](https://github.com/leaveanest/slack-utils-user-status/commit/7bc06b21ed30f4794c3c3915190d9623084e62ae))
+* users.list APIで空文字列cursorによるmissing_argumentエラーを修正 ([6e3f10b](https://github.com/leaveanest/slack-utils-user-status/commit/6e3f10b77908a7f8f8b8aab85560f8bb489cc254))
+
 ## [1.6.0](https://github.com/leaveanest/slack-utils-user-status/compare/v1.5.2...v1.6.0) (2026-01-29)
 
 

@@ -295,13 +295,9 @@ export function buildErrorView(
 
 export default SlackFunction(
   ShowTeamStatusDefinition,
-  async ({ inputs, client, team_id, enterprise_id }) => {
+  async ({ inputs, client, team_id }) => {
     let viewId: string | undefined;
     let userId: string = "";
-
-    // デバッグ: コンテキストのteam_idとenterprise_idを出力
-    console.log("DEBUG: team_id from context:", team_id);
-    console.log("DEBUG: enterprise_id from context:", enterprise_id);
 
     try {
       // ユーザーIDのバリデーション
@@ -329,24 +325,13 @@ export default SlackFunction(
       // その場合は auth.teams.list からワークスペースIDを取得
       let workspaceId = team_id;
       if (team_id && team_id.startsWith("E")) {
-        console.log(
-          "DEBUG: team_id starts with E (Enterprise ID), fetching workspace ID...",
-        );
         const teamsResponse = await client.auth.teams.list({ limit: 10 });
-        console.log(
-          "DEBUG: auth.teams.list response:",
-          JSON.stringify(teamsResponse),
-        );
         if (
           teamsResponse.ok &&
           teamsResponse.teams &&
           (teamsResponse.teams as Array<{ id: string }>).length > 0
         ) {
           workspaceId = (teamsResponse.teams as Array<{ id: string }>)[0].id;
-          console.log(
-            "DEBUG: Using workspace ID from auth.teams.list:",
-            workspaceId,
-          );
         }
       }
 

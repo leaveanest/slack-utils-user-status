@@ -119,10 +119,17 @@ export async function getTeamMemberStatuses(
     // API最大は200、残り必要数を考慮してリクエスト
     const requestLimit = Math.min(limit - members.length, 200);
 
-    const response = await client.users.list({
+    // cursorが空文字列の場合は除外（Slack APIは空文字列をmissing_argumentエラーとして扱う）
+    const requestParams: { limit: number; cursor?: string } = {
       limit: requestLimit,
-      cursor,
-    }) as UsersListResponse;
+    };
+    if (cursor) {
+      requestParams.cursor = cursor;
+    }
+
+    const response = await client.users.list(
+      requestParams,
+    ) as UsersListResponse;
 
     if (!response.ok) {
       const errorCode = response.error ?? "unknown_error";
@@ -152,7 +159,9 @@ export async function getTeamMemberStatuses(
       }
     }
 
-    cursor = response.response_metadata?.next_cursor;
+    // 空文字列の場合はundefinedとして扱う
+    const nextCursor = response.response_metadata?.next_cursor;
+    cursor = nextCursor && nextCursor.length > 0 ? nextCursor : undefined;
   } while (cursor && members.length < limit);
 
   return members;

@@ -453,3 +453,47 @@ Deno.test({
     assertEquals(members[1].user_id, "U33333333");
   },
 });
+
+Deno.test({
+  name:
+    "getTeamMemberStatuses: 空文字列のnext_cursorはページネーション終了として扱う",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  fn: async () => {
+    let callCount = 0;
+
+    const mockClient = {
+      users: {
+        list: (
+          params: { limit?: number; cursor?: string },
+        ): Promise<MockUsersListResponse> => {
+          callCount++;
+
+          if (callCount === 1) {
+            // cursorパラメータが渡されていないことを確認
+            assertEquals(params.cursor, undefined);
+            return Promise.resolve({
+              ok: true,
+              members: [
+                createMockMember({ id: "U11111111" }),
+              ],
+              response_metadata: {
+                // 空文字列のnext_cursor（Slack APIが返すことがある）
+                next_cursor: "",
+              },
+            });
+          } else {
+            // 空文字列cursorでは呼ばれないはず
+            throw new Error("Should not be called with empty cursor");
+          }
+        },
+      },
+    } as unknown as SlackAPIClient;
+
+    const members = await getTeamMemberStatuses(mockClient, 50);
+
+    // 空文字列cursorでは次ページを取得しない
+    assertEquals(callCount, 1);
+    assertEquals(members.length, 1);
+  },
+});

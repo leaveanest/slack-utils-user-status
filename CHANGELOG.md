@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.1](https://github.com/leaveanest/slack-utils-user-status/compare/v1.7.0...v1.7.1) (2026-03-26)
+
+
+### Bug Fixes
+
+* フォークPRでClaude PR Reviewをスキップするように修正 ([fb348c9](https://github.com/leaveanest/slack-utils-user-status/commit/fb348c94ff644970a0d116778572075afdfa97f5))
+
 ## [1.7.0](https://github.com/leaveanest/slack-utils-user-status/compare/v1.6.1...v1.7.0) (2026-02-03)
 
 
